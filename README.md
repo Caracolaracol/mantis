@@ -10,6 +10,7 @@
   <img src="https://img.shields.io/badge/macOS-15%2B-black" alt="macOS 15 o posterior">
   <img src="https://img.shields.io/badge/plataforma-Apple%20Silicon-green" alt="Apple Silicon">
   <img src="https://img.shields.io/badge/versión-0.2.2-pink" alt="Versión 0.2.2">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/licencia-MIT-blue" alt="Licencia MIT"></a>
 </p>
 
 Mantis graba el sonido del computador, un micrófono o una aplicación específica. Guarda archivos **M4A**, organiza una biblioteca local y permite transcribir con modelos que se ejecutan en tu Mac. No requiere cuenta, backend, Handy ni FFmpeg.
@@ -246,4 +247,6 @@ La CLI usa una sola instancia y una cola privada de comandos con caducidad, sin 
 
 No hay transcripción en vivo, diarización, identificación de personas, resúmenes, pausa ni actualizaciones automáticas. La app no está sandboxeada ni preparada para App Store. Una interrupción abrupta no garantiza recuperar todo el audio.
 
-Los avisos del motor y sus dependencias están en [Resources/ThirdParty](Resources/ThirdParty/). Los modelos se rigen por sus propias licencias y no se redistribuyen aquí. Este repositorio no incluye una licencia de código abierto para el código propio de Mantis.
+El código propio de Mantis es **software de código abierto bajo la [licencia MIT](LICENSE)**: puedes usarlo, modificarlo y redistribuirlo, incluso comercialmente, conservando el aviso de autoría y la licencia.
+
+Los avisos del motor y sus dependencias están en [Resources/ThirdParty](Resources/ThirdParty/); sus licencias se conservan por separado. Los modelos se rigen por sus propias licencias y no se redistribuyen aquí.

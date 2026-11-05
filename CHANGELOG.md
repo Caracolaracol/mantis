@@ -4,6 +4,8 @@
 
 Primera publicación de Mantis en GitHub.
 
+El código propio de Mantis está disponible bajo **licencia MIT**, con autoría de Agustin Rojas. Consulta el archivo `LICENSE`, también adjunto a la Release. Motor, dependencias y modelos conservan sus licencias independientes.
+
 ### Incluye
 
 - Grabación local de computador, entrada o aplicación; exportación de solo audio M4A.

@@ -40,6 +40,6 @@
 - [ ] Medidores por canal y nombres de canales de interfaces.
 - [ ] Reanudación de transcripción por segmentos y mejores cortes de palabras.
 - [ ] Evaluar diarización anónima como función separada, sin prometer identificación personal.
-- [ ] Definir licencia del código propio antes de anunciarlo como software de código abierto.
+- [x] Código propio publicado bajo licencia MIT; avisos de terceros y licencias de modelos independientes.
 
 Las pruebas técnicas no certifican reuniones reales ni recuperación completa tras un cierre abrupto. No usar Mantis como única copia de una grabación importante sin completar las validaciones correspondientes.
