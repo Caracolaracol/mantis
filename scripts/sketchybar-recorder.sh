@@ -2,11 +2,17 @@
 set -euo pipefail
 umask 077
 
-APP="${MEETING_RECORDER_APP:-$HOME/Code/meeting-recorder/build/Mantis.app}"
+APP="${MEETING_RECORDER_APP:-/Applications/Mantis.app}"
 EXECUTABLE="$APP/Contents/MacOS/MeetingRecorder"
 CONTROL="${MEETING_RECORDER_CONTROL:-$HOME/Library/Application Support/MeetingRecorder/Control}"
 STATUS="$CONTROL/status.json"
 NAME="${NAME:-meeting_recorder}"
+if [[ "${MEETING_RECORDER_DRY_RUN:-0}" != 1 ]]; then
+  SKETCHYBAR_BIN="${SKETCHYBAR_BIN:-$(command -v sketchybar || true)}"
+  [[ -n "$SKETCHYBAR_BIN" ]] || SKETCHYBAR_BIN=/opt/homebrew/bin/sketchybar
+  [[ -x "$SKETCHYBAR_BIN" ]] || SKETCHYBAR_BIN=/usr/local/bin/sketchybar
+  [[ -x "$SKETCHYBAR_BIN" ]] || { printf 'No se encuentra SketchyBar; configura SKETCHYBAR_BIN.\n' >&2; exit 1; }
+fi
 STATE=offline
 ELAPSED=0
 
@@ -23,7 +29,7 @@ if [[ -f "$STATUS" ]]; then
 fi
 [[ "$ELAPSED" =~ ^[0-9]+$ ]] || ELAPSED=0
 
-if [[ "${1:-}" == click ]]; then
+if [[ "${1:-}" == click || "${SENDER:-}" == mouse.clicked ]]; then
   COMMAND=--toggle-recording
   if [[ "${BUTTON:-left}" == right || "$STATE" == preparing || "$STATE" == transcribing || "$STATE" == error ]]; then
     COMMAND=--show
@@ -33,7 +39,7 @@ if [[ "${1:-}" == click ]]; then
     exit 0
   fi
   if [[ ! -x "$EXECUTABLE" ]]; then
-    /opt/homebrew/bin/sketchybar --set "$NAME" label='Falta app' icon.color=0xffde7f26
+    "$SKETCHYBAR_BIN" --set "$NAME" label='Falta app' icon.color=0xffde7f26
     exit 1
   fi
   mkdir -p "$CONTROL"
@@ -43,7 +49,7 @@ fi
 
 COLOR=0xff9b7fd4
 LABEL_COLOR=0xffccd7e4
-ICON='󰑋'
+ICON='●'
 LABEL=Grabar
 case "$STATE" in
   recording)
@@ -61,5 +67,5 @@ fi
 if [[ "${MEETING_RECORDER_DRY_RUN:-0}" == 1 ]]; then
   printf 'state=%s label=%s label_color=%s\n' "$STATE" "$LABEL" "$LABEL_COLOR"
 else
-  /opt/homebrew/bin/sketchybar --set "$NAME" icon="$ICON" icon.color="$COLOR" label="$LABEL" label.color="$LABEL_COLOR"
+  "$SKETCHYBAR_BIN" --set "$NAME" icon="$ICON" icon.color="$COLOR" label="$LABEL" label.color="$LABEL_COLOR"
 fi

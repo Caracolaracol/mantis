@@ -19,7 +19,7 @@
 ## Validación automatizada
 
 - [x] 81 pruebas Swift con integraciones locales y vistas sintéticas.
-- [x] 7 pruebas Python de SketchyBar en modo dry-run.
+- [x] 11 pruebas Python de SketchyBar en modo dry-run, incluidos registro del widget y rutas con espacios/comillas.
 - [x] Las pruebas de recuperación de permisos usan un ejecutor falso: no ejecutan `tccutil` real.
 - [x] Las pruebas de inicio de sesión usan un servicio falso: no registran la app al login.
 

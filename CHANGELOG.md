@@ -1,5 +1,11 @@
 # Cambios
 
+## Sin publicar
+
+- Widget reutilizable para SketchyBar en `integrations/sketchybar/mantis.sh`, con guía en README.
+- Plugin configurable con detección de SketchyBar y ruta predeterminada de la app instalada.
+- 11 pruebas de integración en dry-run; no requieren iniciar grabaciones ni modificar la barra.
+
 ## 0.2.2 — 2026-11-05
 
 Primera publicación de Mantis en GitHub.

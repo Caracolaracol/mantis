@@ -230,7 +230,7 @@ scripts/                     # compilación, DMG, verificación y SketchyBar opc
 design/                      # exploraciones visuales de la marca
 ```
 
-### CLI y SketchyBar opcional
+### CLI
 
 ```bash
 build/Mantis.app/Contents/MacOS/MeetingRecorder --status
@@ -241,7 +241,76 @@ build/Mantis.app/Contents/MacOS/MeetingRecorder --stop-recording
 build/Mantis.app/Contents/MacOS/MeetingRecorder --cancel-transcription
 ```
 
-La CLI usa una sola instancia y una cola privada de comandos con caducidad, sin abrir puertos. La integración opcional está en `scripts/sketchybar-recorder.sh`; configura `MEETING_RECORDER_APP` con la ruta de tu app. SketchyBar no es necesario para usar Mantis.
+La CLI usa una sola instancia y una cola privada de comandos con caducidad, sin abrir puertos.
+
+## Widget para SketchyBar
+
+La integración es **opcional**: Mantis tiene su propia barra de menús y no necesita SketchyBar. Si ya usas [SketchyBar](https://github.com/FelixKratz/SketchyBar), puedes añadir un widget para grabar y ver el estado sin abrir la biblioteca.
+
+El repositorio incluye:
+
+- [`integrations/sketchybar/mantis.sh`](integrations/sketchybar/mantis.sh): configuración del ítem.
+- [`scripts/sketchybar-recorder.sh`](scripts/sketchybar-recorder.sh): plugin de estado y control.
+
+### Configuración
+
+Con Mantis en `/Applications/Mantis.app` y SketchyBar ya instalado, ejecuta desde la carpeta de este repositorio:
+
+```bash
+mkdir -p "$HOME/.config/sketchybar/plugins" "$HOME/.config/sketchybar/items"
+cp scripts/sketchybar-recorder.sh "$HOME/.config/sketchybar/plugins/mantis-recorder.sh"
+cp integrations/sketchybar/mantis.sh "$HOME/.config/sketchybar/items/mantis.sh"
+```
+
+Agrega esta línea a tu `~/.config/sketchybar/sketchybarrc` y recarga la barra:
+
+```bash
+/bin/bash "${CONFIG_DIR:-$HOME/.config/sketchybar}/items/mantis.sh"
+```
+
+```bash
+sketchybar --reload
+```
+
+Se crea el ítem **`mantis`** a la derecha, con actualización cada segundo. No requiere Nerd Fonts: el indicador es un carácter Unicode estándar. La configuración se ejecuta con Bash y cita las rutas para admitir espacios.
+
+### Controles y estados
+
+| Acción o estado | Comportamiento |
+| --- | --- |
+| Clic izquierdo en reposo | Inicia audio del computador + entrada elegida. Si la app estaba cerrada, la inicia. |
+| Clic izquierdo grabando | Detiene y guarda; transcribe solo si activaste esa opción. |
+| Clic derecho | Abre Mantis. |
+| Clic durante preparación, transcripción o error | Abre Mantis sin iniciar otra grabación. |
+| `Grabar` | En reposo o app cerrada. |
+| `REC mm:ss` rojo | Grabación en curso. |
+| `Preparando` / `Transcribiendo` | Operación en curso. |
+| `Revisar` / `Falta app` | Error o bundle no encontrado. |
+
+Las actualizaciones periódicas y el evento de despertar del equipo **no empiezan grabaciones**. El plugin comprueba que el PID esté vivo y que el estado tenga menos de cinco segundos. La bienvenida y los permisos siguen siendo obligatorios: configura y autoriza Mantis antes de usar el widget. Grabar desde el widget es una acción explícita; avisa a los participantes.
+
+### Personalización y prueba segura
+
+Puedes pasar variables al ejecutar la configuración, sin editar los scripts:
+
+```bash
+MANTIS_APP_PATH="$HOME/Applications/Mantis.app" \
+MANTIS_WIDGET_POSITION=left \
+MANTIS_WIDGET_NAME=mantis \
+/bin/bash "${CONFIG_DIR:-$HOME/.config/sketchybar}/items/mantis.sh"
+```
+
+`MANTIS_WIDGET_SCRIPT` cambia la ruta del plugin; `SKETCHYBAR_BIN` cambia la del ejecutable de SketchyBar. Se detecta mediante `PATH` y las ubicaciones habituales de Homebrew. Para usar el plugin directamente, la ruta de la app se configura con `MEETING_RECORDER_APP`.
+
+Prueba sin abrir Mantis ni grabar:
+
+```bash
+MEETING_RECORDER_DRY_RUN=1 /bin/bash scripts/sketchybar-recorder.sh
+MEETING_RECORDER_DRY_RUN=1 BUTTON=left /bin/bash scripts/sketchybar-recorder.sh click
+python3 scripts/test-sketchybar.py
+```
+
+El modo dry-run solo imprime el estado o el comando que enviaría. No hace cambios en la barra ni inicia capturas. Si ya tienes un ítem que usa este plugin, actualízalo en lugar de añadir un segundo widget.
 
 ## Créditos
 
