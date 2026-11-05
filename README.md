@@ -243,6 +243,12 @@ build/Mantis.app/Contents/MacOS/MeetingRecorder --cancel-transcription
 
 La CLI usa una sola instancia y una cola privada de comandos con caducidad, sin abrir puertos. La integración opcional está en `scripts/sketchybar-recorder.sh`; configura `MEETING_RECORDER_APP` con la ruta de tu app. SketchyBar no es necesario para usar Mantis.
 
+## Créditos
+
+Mantis utiliza [transcribe.cpp](https://github.com/handy-computer/transcribe.cpp), del proyecto [handy-computer](https://github.com/handy-computer), como motor de transcripción local. Gracias a sus autores y a las comunidades de ggml, Silero VAD y miniz, cuyas licencias y avisos se conservan en [Resources/ThirdParty](Resources/ThirdParty/).
+
+Mantis es un proyecto independiente: **no requiere tener Handy instalado ni implica afiliación o respaldo por parte de Handy**. Los modelos de transcripción pertenecen a sus respectivos autores y mantienen sus propias licencias.
+
 ## Estado y licencias
 
 No hay transcripción en vivo, diarización, identificación de personas, resúmenes, pausa ni actualizaciones automáticas. La app no está sandboxeada ni preparada para App Store. Una interrupción abrupta no garantiza recuperar todo el audio.
