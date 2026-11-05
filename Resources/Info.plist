@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleExecutable</key><string>MeetingRecorder</string>
+    <key>CFBundleIdentifier</key><string>local.agus.MeetingRecorder</string>
+    <key>CFBundleName</key><string>Mantis</string>
+    <key>CFBundleDisplayName</key><string>Mantis</string>
+    <key>CFBundlePackageType</key><string>APPL</string>
+    <key>CFBundleIconFile</key><string>Mantis.icns</string>
+    <key>CFBundleShortVersionString</key><string>0.2.2</string>
+    <key>CFBundleVersion</key><string>5</string>
+    <key>LSMinimumSystemVersion</key><string>15.0</string>
+    <key>LSApplicationCategoryType</key><string>public.app-category.productivity</string>
+    <key>NSPrincipalClass</key><string>NSApplication</string>
+    <key>NSHighResolutionCapable</key><true/>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Mantis necesita acceso a la entrada seleccionada (micrófono o interfaz de audio) para guardar sus canales en las grabaciones que decidas iniciar.</string>
+    <key>NSScreenCaptureUsageDescription</key>
+    <string>Mantis usa ScreenCaptureKit para capturar el audio de todo el computador o de la aplicación que selecciones. No guarda imágenes ni video.</string>
+    <key>NSAudioCaptureUsageDescription</key>
+    <string>Mantis necesita capturar el audio del computador para guardar y transcribir tus reuniones. No se guarda video.</string>
+</dict>
+</plist>

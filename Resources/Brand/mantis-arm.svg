@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Mantis · brazo</title>
+  <desc id="desc">Un brazo raptorial plegado de mantis, con dos dientes y una silueta angular. Dos colores planos.</desc>
+  <rect width="64" height="64" rx="14" fill="#232031"/>
+  <path fill="#e8cfd4" d="M13 48L23 37L27 20Q28 16 32 15L47 10Q51 9 50 13L40 39Q39 42 36 40L31 36L34 31L37 34L40 26L36 28L39 21L43 20L44 17L33 22L29 40L19 53Q17 55 15 53Z"/>
+</svg>

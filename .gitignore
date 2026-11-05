@@ -1,0 +1,27 @@
+.build/
+.swiftpm/
+build/
+.DS_Store
+*.xcuserstate
+*.log
+*.app/
+*.dmg
+*.dmg.sha256
+
+# Private recordings, model weights and local history
+*.m4a
+*.mov
+*.wav
+*.mp3
+*.gguf
+.mantis/
+recordings/
+
+# Local secrets and signing material
+.env
+.env.*
+!.env.example
+*.p12
+*.pfx
+*.key
+*.pem
