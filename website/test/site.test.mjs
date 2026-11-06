@@ -80,9 +80,34 @@ test('occasional attack and fading silhouette are decorative and can be disabled
   assert.match(html, /class="mantis-attack" aria-hidden="true"/);
   assert.match(html, /class="attack-arm"/);
   assert.match(html, /class="attack-trace"/);
+  assert.equal((html.match(/class="attack-arm"/g) || []).length, 2);
+  assert.equal((html.match(/class="attack-trace"/g) || []).length, 2);
+  assert.match(html, /attack-side-right/);
+  assert.match(html, /attack-side-left/);
+  assert.equal((html.match(/class="arm-spine"/g) || []).length, 56);
+  for (const segment of ['coxa', 'femur', 'tibia']) assert.match(html, new RegExp(`arm-${segment}`));
   assert.match(css, /mantis-strike/);
   assert.match(css, /mantis-afterimage/);
   assert.match(css, /\.mantis-attack \{ display: none; \}/);
+});
+
+test('header spans viewport without the capped content wrapper', async () => {
+  for (const file of pages) {
+    const html = await readFile(path.join(root, file), 'utf8');
+    assert.match(html, /<header class="site-header">/);
+    assert.doesNotMatch(html, /<header class="site-header wrap"/);
+  }
+  const css = await readFile(new URL('../src/styles/global.css', import.meta.url), 'utf8');
+  assert.match(css, /\.site-header \{ width: 100%; padding-inline: clamp\(/);
+});
+
+test('first strike starts after five seconds and opposite side follows 300ms later', async () => {
+  const layout = await readFile(new URL('../src/layouts/SiteLayout.astro', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../src/styles/global.css', import.meta.url), 'utf8');
+  assert.match(layout, /first \? 5000 : 26000 \+ Math\.random\(\) \* 26000/);
+  assert.match(css, /\.attack-side-left \{ transform: scaleX\(-1\); --attack-delay: 300ms; \}/);
+  assert.match(css, /mantis-strike 8s .*var\(--attack-delay\) both/);
+  assert.match(css, /mantis-afterimage 8s .*var\(--attack-delay\) both/);
 });
 
 test('grain is decorative, CSS animated, and respects reduced motion', async () => {

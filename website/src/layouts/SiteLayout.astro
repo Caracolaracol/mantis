@@ -34,7 +34,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <a class="skip-link" href="#contenido">{t('Skip to content', 'Saltar al contenido')}</a>
     <div class="grain" aria-hidden="true" style={`--noise: url('${href('images/grain.svg')}')`}></div>
     <MantisAttack />
-    <header class="site-header wrap">
+    <header class="site-header">
       <a class="brand" href={localizedHref(language)} aria-label={t('Mantis, home', 'Mantis, inicio')}><img class="brand-mark" src={href('images/mantis-mark.svg')} width="64" height="64" alt="" /><span>Mantis<span class="brand-caption">{t('FOR MACOS', 'PARA MACOS')}</span></span></a>
       <nav aria-label={t('Main navigation', 'Principal')}>
         <a href={localizedHref(language, 'docs')} aria-current={section === 'docs' ? 'page' : undefined}>{t('Documentation', 'Documentación')}</a>
@@ -67,7 +67,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
           void attack.offsetWidth;
           attack.classList.add('is-attacking');
           scheduleAttack();
-        }, first ? 16000 : 26000 + Math.random() * 26000);
+        }, first ? 5000 : 26000 + Math.random() * 26000);
       }
       function update() {
         document.documentElement.dataset.grainPaused = String(paused || preference.matches);

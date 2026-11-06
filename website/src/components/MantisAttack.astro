@@ -1,7 +1,40 @@
 ---
-const arm = 'M980 670 C850 625 760 543 678 472 L558 333 Q543 310 520 293 L319 155 Q295 142 280 151 L239 189 Q226 202 239 222 L358 383 382 348 348 301 398 338 418 308 376 268 431 300 450 274 401 226 465 258 493 280 510 303 517 335 612 502 Q640 543 685 575 L909 740 Z';
+// Original drawing informed by S. lineola foreleg anatomy: long coxa,
+// thick femur, folded tibia, opposed ventral spines and a terminal spur.
+// Reference: https://www.nature.com/articles/s41598-025-06427-6/figures/3
+const segments = [
+  { name: 'coxa', d: 'M1040 750 Q845 671 628 539 L587 503 Q571 484 592 465 Q611 451 630 469 L677 508 Q866 611 1070 675Z' },
+  { name: 'femur', d: 'M601 509 Q575 526 548 496 L337 277 Q303 241 312 210 Q317 187 340 184 Q366 183 392 214 Q510 334 605 453 Q629 487 601 509Z' },
+  { name: 'tibia', d: 'M331 207 Q350 215 338 244 L257 435 Q246 460 225 474 L194 488 Q215 465 223 438 L303 229 Q313 202 331 207Z' },
+];
+function spineRow(start: number[], end: number[], normal: number[], count: number, length: number) {
+  return Array.from({ length: count }, (_, index) => {
+    const t = (index + .5) / count;
+    const x = start[0] + (end[0] - start[0]) * t;
+    const y = start[1] + (end[1] - start[1]) * t;
+    const size = length * (index % 3 === 0 ? 1.4 : .8);
+    const dx = (end[0] - start[0]) / count * .55;
+    const dy = (end[1] - start[1]) / count * .55;
+    return `M${x} ${y}l${normal[0] * size + dx * .4} ${normal[1] * size + dy * .4}L${x + dx} ${y + dy}Z`;
+  });
+}
+const spines = [
+  ...spineRow([343, 275], [544, 490], [-.74, .67], 15, 28),
+  ...spineRow([323, 257], [249, 432], [.92, .39], 13, 20),
+];
 ---
 <div class="mantis-attack" aria-hidden="true">
-  <svg class="attack-trace" viewBox="0 0 1000 800" focusable="false"><path d={arm} /></svg>
-  <svg class="attack-arm" viewBox="0 0 1000 800" focusable="false"><path class="arm-body" d={arm} /><path class="arm-ridge" d="M954 698 663 524 536 315 286 180M536 315 512 350" /></svg>
+  {['right', 'left'].map(side => <div class={`attack-side attack-side-${side}`}>
+    <svg class="attack-trace" viewBox="0 0 1000 800" focusable="false">
+      {segments.map(segment => <path d={segment.d} />)}
+      {spines.map(d => <path d={d} />)}
+    </svg>
+    <svg class="attack-arm" viewBox="0 0 1000 800" focusable="false">
+      {segments.map(segment => <path class={`arm-body arm-${segment.name}`} d={segment.d} />)}
+      {spines.map(d => <path class="arm-spine" d={d} />)}
+      <path class="arm-ridge" d="M1014 707Q825 633 612 493M582 473Q473 344 344 218M323 245 238 444" />
+      <circle class="arm-joint" cx="331" cy="222" r="14" />
+      <circle class="arm-joint" cx="594" cy="484" r="16" />
+    </svg>
+  </div>)}
 </div>

@@ -32,7 +32,9 @@ Una textura SVG pequeña con `feTurbulence` se repite en una capa decorativa rec
 
 Se detiene con `prefers-reduced-motion`, puede pausarse desde el pie y deja de animarse al ocultar la pestaña. No requiere canvas, fuentes remotas, analítica ni servicios externos.
 
-Un ataque SVG decorativo aparece por primera vez a los 16 segundos y luego a intervalos de 26–52 segundos. El brazo entra y se retira; una segunda capa deja una silueta que se desvanece durante los siguientes segundos. Está detrás del contenido, no captura eventos y se oculta con pausa, pestaña no visible o movimiento reducido. No requiere imágenes generadas ni dependencias de animación.
+Un ataque SVG decorativo comienza a los 5 segundos y luego se repite a intervalos de 26–52 segundos. Un brazo entra desde la derecha; otro, reflejado desde la izquierda, comienza 300 ms después. Cada brazo se retira y deja una silueta que se desvanece durante los siguientes segundos. El dibujo original incluye coxa, fémur, tibia plegada, dos filas opuestas de espinas tipo sierra y espolón terminal, basado en [referencias anatómicas de S. lineola](https://www.nature.com/articles/s41598-025-06427-6/figures/3). Está detrás del contenido, no captura eventos y se oculta con pausa, pestaña no visible o movimiento reducido. No requiere imágenes generadas ni dependencias de animación.
+
+El header ocupa todo el ancho del viewport, con márgenes internos adaptativos; el contenido mantiene su ancho de lectura limitado.
 
 Referencias técnicas: [MDN: feTurbulence](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTurbulence) y [técnica de textura con saltos CSS](https://webdevpuneet.com/ui-snippets/noise-background/). Implementación propia bajo la licencia MIT del repositorio.
 

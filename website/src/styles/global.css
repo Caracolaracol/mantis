@@ -44,7 +44,7 @@ h1, h2, h3, p { margin-top: 0; }
   83% { transform: translate(-27px, 8px); }
 }
 [data-grain-paused='true'] .grain::before, [data-page-hidden='true'] .grain::before { animation-play-state: paused; }
-.site-header { min-height: 112px; display: flex; align-items: center; gap: 32px; border-bottom: 1px solid var(--border); }
+.site-header { width: 100%; padding-inline: clamp(20px, 3.4vw, 64px); min-height: 112px; display: flex; align-items: center; gap: 32px; border-bottom: 1px solid var(--border); }
 .brand { display: flex; align-items: center; gap: 12px; color: var(--pink); font-size: 30px; font-weight: 650; letter-spacing: -.8px; text-decoration: none; }
 .brand-mark { width: 64px; height: 64px; }
 .brand-caption { display: block; color: var(--muted); font-size: 8px; font-weight: 500; letter-spacing: 2px; margin-top: 4px; }
@@ -58,15 +58,20 @@ h1, h2, h3, p { margin-top: 0; }
 .language-switch a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; }
 .language-switch a[aria-current] { color: var(--pink); text-decoration: underline; text-underline-offset: 5px; }
 .mantis-attack { position: fixed; pointer-events: none; z-index: 0; inset: 0; overflow: hidden; }
+.attack-side { position: absolute; inset: 0; --attack-delay: 0ms; }
+.attack-side-left { transform: scaleX(-1); --attack-delay: 300ms; }
 .mantis-attack svg { position: absolute; width: min(1250px, 115vw); height: 115vh; right: -15vw; bottom: -27vh; opacity: 0; overflow: visible; transform-origin: 90% 85%; }
 .arm-body { fill: #436c46; stroke: #a6cc82; stroke-width: 1.2; }
+.arm-tibia { fill: #668a53; }
+.arm-spine { fill: #a6cc82; stroke: #c6dcaa; stroke-width: .8; stroke-linejoin: round; }
+.arm-joint { fill: #294631; stroke: #a6cc82; stroke-width: 2; }
 .arm-ridge { fill: none; stroke: #a6cc82; stroke-width: 2; }
 .attack-trace { fill: #a6cc8210; stroke: var(--pink); stroke-width: 1.5; transform: translate(-3%, -3%) rotate(-8deg); }
-.is-attacking .attack-arm { animation: mantis-strike 8s cubic-bezier(.2,.75,.15,1) both; }
-.is-attacking .attack-trace { animation: mantis-afterimage 8s ease-out both; }
+.is-attacking .attack-arm { animation: mantis-strike 8s cubic-bezier(.2,.75,.15,1) var(--attack-delay) both; }
+.is-attacking .attack-trace { animation: mantis-afterimage 8s ease-out var(--attack-delay) both; }
 @keyframes mantis-strike {
-  0%, 9% { transform: translate(65%, 60%) rotate(30deg); opacity: 0; }
-  17% { transform: translate(-3%, -3%) rotate(-8deg); opacity: .3; }
+  0% { transform: translate(65%, 60%) rotate(30deg); opacity: 0; }
+  8%, 17% { transform: translate(-3%, -3%) rotate(-8deg); opacity: .3; }
   23% { transform: translate(-1%, -1%) rotate(-6deg); opacity: .3; }
   41%, 100% { transform: translate(70%, 70%) rotate(32deg); opacity: 0; }
 }
