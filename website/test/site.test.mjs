@@ -144,6 +144,10 @@ test('arms and silhouettes have soft fills without outlines and an accelerated s
   assert.match(css, /\.attack-arm \{ filter: blur\(1\.5px\); \}/);
   assert.match(css, /\.attack-trace \{ fill: #07140e; filter: blur\(2\.5px\);/);
   assert.match(css, /\.attack-arm \*, \.attack-trace \* \{ stroke: none; \}/);
+  assert.match(css, /\.arm-body \{ fill: #e8cfd4; \}/);
+  assert.match(css, /\.arm-tibia \{ fill: #f4e0e5; \}/);
+  assert.match(css, /\.arm-spine \{ fill: #ffeef2; \}/);
+  assert.match(css, /\.arm-joint \{ fill: #c39ca7; \}/);
   assert.doesNotMatch(html, /class="arm-ridge"/);
   assert.match(css, /animation-timing-function: cubic-bezier\(\.55, 0, 1, \.6\)/);
   assert.match(css, /animation-timing-function: cubic-bezier\(\.3, 0, \.8, \.25\)/);

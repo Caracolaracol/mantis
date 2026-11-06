@@ -39,7 +39,7 @@ La home termina en la franja AUDIO ONLY / LOCAL FIRST / NO ACCOUNTS / MIT / OPEN
 Si el contenido no llena la pantalla, la franja queda al borde inferior gracias a un layout flexible con altura mínima de 100svh. No es una capa fija: cuando el hero requiere más espacio, la franja sigue el flujo y no lo tapa.
 
 Los brazos y las siluetas usan rellenos sin contornos, con blur suave de 1,5 px y 2,5 px respectivamente. Cada ataque dura 800 ms: entrada acelerada de 320 ms, apoyo de 160 ms y retirada rápida de 320 ms. La silueta aparece al llegar el brazo y mantiene su desvanecimiento independiente de 8 segundos.
-Los brazos usan verdes más claros que el fondo del sitio; la silueta usa un verde más oscuro para dejar una sombra, no un contorno luminoso.
+Los brazos usan tonos rosa del logo (base #e8cfd4, tibia #f4e0e5, espinas #ffeef2 y articulaciones #c39ca7); la silueta conserva el verde oscuro #07140e para dejar una sombra, no un contorno luminoso.
 
 Referencias técnicas: [MDN: feTurbulence](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTurbulence) y [técnica de textura con saltos CSS](https://webdevpuneet.com/ui-snippets/noise-background/). Implementación propia bajo la licencia MIT del repositorio.
 
