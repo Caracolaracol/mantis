@@ -69,6 +69,7 @@ test('home defaults to English and updated copy is present in both languages', a
   assert.match(spanish, /Mantis lo graba\./);
   for (const html of [english, spanish]) {
     assert.doesNotMatch(html, /UNA PEQUEÑA APP PARA ESCUCHAR MEJOR|Sin mandar tus grabaciones a una nube/);
+    assert.doesNotMatch(html, /Illustrative screenshot with fictional recordings|Captura ilustrativa con grabaciones ficticias/);
     assert.match(html, /images\/mantis-mark\.svg/);
     assert.match(html, /class="language-switch"/);
   }
@@ -91,14 +92,18 @@ test('occasional attack and fading silhouette are decorative and can be disabled
   assert.match(css, /\.mantis-attack \{ display: none; \}/);
 });
 
-test('header spans viewport without the capped content wrapper', async () => {
+test('header and footer span viewport while content has a slightly wider cap', async () => {
   for (const file of pages) {
     const html = await readFile(path.join(root, file), 'utf8');
     assert.match(html, /<header class="site-header">/);
     assert.doesNotMatch(html, /<header class="site-header wrap"/);
+    assert.match(html, /<footer class="site-footer">/);
+    assert.doesNotMatch(html, /<footer class="site-footer wrap"/);
   }
   const css = await readFile(new URL('../src/styles/global.css', import.meta.url), 'utf8');
   assert.match(css, /\.site-header \{ width: 100%; padding-inline: clamp\(/);
+  assert.match(css, /\.site-footer \{ width: 100%; padding-inline: clamp\(/);
+  assert.match(css, /\.wrap \{ width: min\(1280px, calc\(100% - 96px\)\)/);
 });
 
 test('first strike starts after five seconds and opposite side follows 300ms later', async () => {
@@ -106,8 +111,31 @@ test('first strike starts after five seconds and opposite side follows 300ms lat
   const css = await readFile(new URL('../src/styles/global.css', import.meta.url), 'utf8');
   assert.match(layout, /first \? 5000 : 26000 \+ Math\.random\(\) \* 26000/);
   assert.match(css, /\.attack-side-left \{ transform: scaleX\(-1\); --attack-delay: 300ms; \}/);
-  assert.match(css, /mantis-strike 8s .*var\(--attack-delay\) both/);
+  assert.match(css, /mantis-strike 800ms .*var\(--attack-delay\) both/);
   assert.match(css, /mantis-afterimage 8s .*var\(--attack-delay\) both/);
+});
+
+test('arms and silhouettes have soft fills without outlines and an accelerated strike', async () => {
+  const css = await readFile(new URL('../src/styles/global.css', import.meta.url), 'utf8');
+  const html = await readFile(path.join(root, 'index.html'), 'utf8');
+  assert.match(css, /\.attack-arm \{ filter: blur\(1\.5px\); \}/);
+  assert.match(css, /\.attack-trace \{ fill: #07140e; filter: blur\(2\.5px\);/);
+  assert.match(css, /\.attack-arm \*, \.attack-trace \* \{ stroke: none; \}/);
+  assert.doesNotMatch(html, /class="arm-ridge"/);
+  assert.match(css, /animation-timing-function: cubic-bezier\(\.55, 0, 1, \.6\)/);
+  assert.match(css, /animation-timing-function: cubic-bezier\(\.3, 0, \.8, \.25\)/);
+  const luminance = hex => {
+    const rgb = hex.match(/\w\w/g).map(channel => {
+      const value = parseInt(channel, 16) / 255;
+      return value <= .04045 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4;
+    });
+    return rgb[0] * .2126 + rgb[1] * .7152 + rgb[2] * .0722;
+  };
+  const background = luminance(css.match(/--forest: #([0-9a-f]{6})/)[1]);
+  for (const part of ['body', 'tibia', 'spine', 'joint']) {
+    assert.ok(luminance(css.match(new RegExp(`\\.arm-${part} \\{ fill: #([0-9a-f]{6})`))[1]) > background);
+  }
+  assert.ok(luminance(css.match(/\.attack-trace \{ fill: #([0-9a-f]{6})/)[1]) < background);
 });
 
 test('grain is decorative, CSS animated, and respects reduced motion', async () => {

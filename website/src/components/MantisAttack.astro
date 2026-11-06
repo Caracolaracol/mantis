@@ -32,7 +32,6 @@ const spines = [
     <svg class="attack-arm" viewBox="0 0 1000 800" focusable="false">
       {segments.map(segment => <path class={`arm-body arm-${segment.name}`} d={segment.d} />)}
       {spines.map(d => <path class="arm-spine" d={d} />)}
-      <path class="arm-ridge" d="M1014 707Q825 633 612 493M582 473Q473 344 344 218M323 245 238 444" />
       <circle class="arm-joint" cx="331" cy="222" r="14" />
       <circle class="arm-joint" cx="594" cy="484" r="16" />
     </svg>

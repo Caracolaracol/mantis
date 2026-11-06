@@ -34,7 +34,10 @@ Se detiene con `prefers-reduced-motion`, puede pausarse desde el pie y deja de a
 
 Un ataque SVG decorativo comienza a los 5 segundos y luego se repite a intervalos de 26–52 segundos. Un brazo entra desde la derecha; otro, reflejado desde la izquierda, comienza 300 ms después. Cada brazo se retira y deja una silueta que se desvanece durante los siguientes segundos. El dibujo original incluye coxa, fémur, tibia plegada, dos filas opuestas de espinas tipo sierra y espolón terminal, basado en [referencias anatómicas de S. lineola](https://www.nature.com/articles/s41598-025-06427-6/figures/3). Está detrás del contenido, no captura eventos y se oculta con pausa, pestaña no visible o movimiento reducido. No requiere imágenes generadas ni dependencias de animación.
 
-El header ocupa todo el ancho del viewport, con márgenes internos adaptativos; el contenido mantiene su ancho de lectura limitado.
+El header y el footer ocupan todo el ancho del viewport, con márgenes internos adaptativos. El contenido principal mantiene un ancho máximo de 1280 px (antes 1200 px), con márgenes móviles sin cambios; las páginas de lectura conservan sus límites específicos.
+
+Los brazos y las siluetas usan rellenos sin contornos, con blur suave de 1,5 px y 2,5 px respectivamente. Cada ataque dura 800 ms: entrada acelerada de 320 ms, apoyo de 160 ms y retirada rápida de 320 ms. La silueta aparece al llegar el brazo y mantiene su desvanecimiento independiente de 8 segundos.
+Los brazos usan verdes más claros que el fondo del sitio; la silueta usa un verde más oscuro para dejar una sombra, no un contorno luminoso.
 
 Referencias técnicas: [MDN: feTurbulence](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTurbulence) y [técnica de textura con saltos CSS](https://webdevpuneet.com/ui-snippets/noise-background/). Implementación propia bajo la licencia MIT del repositorio.
 
