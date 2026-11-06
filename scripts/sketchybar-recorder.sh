@@ -15,8 +15,11 @@ if [[ "${MEETING_RECORDER_DRY_RUN:-0}" != 1 ]]; then
 fi
 STATE=offline
 ELAPSED=0
+LANGUAGE=en
 
 if [[ -f "$STATUS" ]]; then
+  LANGUAGE=$(/usr/bin/plutil -extract language raw -o - "$STATUS" 2>/dev/null || true)
+  [[ "$LANGUAGE" == es ]] || LANGUAGE=en
   PID=$(/usr/bin/plutil -extract pid raw -o - "$STATUS" 2>/dev/null || true)
   STAMP=$(/usr/bin/plutil -extract updatedAt raw -o - "$STATUS" 2>/dev/null || true)
   if [[ "$PID" =~ ^[0-9]+$ && "$STAMP" =~ ^[0-9]+(\.[0-9]+)?$ ]] && kill -0 "$PID" 2>/dev/null; then
@@ -39,7 +42,9 @@ if [[ "${1:-}" == click || "${SENDER:-}" == mouse.clicked ]]; then
     exit 0
   fi
   if [[ ! -x "$EXECUTABLE" ]]; then
-    "$SKETCHYBAR_BIN" --set "$NAME" label='Falta app' icon.color=0xffde7f26
+    MISSING='Missing app'
+    [[ "$LANGUAGE" != es ]] || MISSING='Falta app'
+    "$SKETCHYBAR_BIN" --set "$NAME" label="$MISSING" icon.color=0xffde7f26
     exit 1
   fi
   mkdir -p "$CONTROL"
@@ -50,15 +55,16 @@ fi
 COLOR=0xff9b7fd4
 LABEL_COLOR=0xffccd7e4
 ICON='●'
-LABEL=Grabar
+LABEL=Record
+[[ "$LANGUAGE" != es ]] || LABEL=Grabar
 case "$STATE" in
   recording)
     ICON='●'; COLOR=0xffd94a6d
     printf -v LABEL 'REC %02d:%02d' "$((ELAPSED / 60))" "$((ELAPSED % 60))"
     ;;
-  preparing) LABEL='Preparando'; COLOR=0xffde7f26 ;;
-  transcribing) LABEL='Transcribiendo'; COLOR=0xffde7f26 ;;
-  error) LABEL='Revisar'; COLOR=0xffde7f26 ;;
+  preparing) LABEL='Preparing'; [[ "$LANGUAGE" != es ]] || LABEL='Preparando'; COLOR=0xffde7f26 ;;
+  transcribing) LABEL='Transcribing'; [[ "$LANGUAGE" != es ]] || LABEL='Transcribiendo'; COLOR=0xffde7f26 ;;
+  error) LABEL='Review'; [[ "$LANGUAGE" != es ]] || LABEL='Revisar'; COLOR=0xffde7f26 ;;
 esac
 if [[ "$STATE" == recording || "$STATE" == preparing || "$STATE" == transcribing || "$STATE" == error ]]; then
   LABEL_COLOR="$COLOR"

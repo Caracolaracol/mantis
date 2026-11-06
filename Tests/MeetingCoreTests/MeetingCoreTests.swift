@@ -10,8 +10,8 @@ final class MeetingCoreTests: XCTestCase {
     }
 
     func testCaptureModesHaveExplicitSourcesAndLabels() {
-        XCTAssertEqual(RecordingMode.microphone.title, "Solo entrada de audio")
-        XCTAssertEqual(RecordingMode.systemAndMicrophone.title, "Todo: computador + entrada")
+        XCTAssertEqual(RecordingMode.microphone.title, "Audio input only")
+        XCTAssertEqual(RecordingMode.systemAndMicrophone.title, "All: computer + input")
         XCTAssertTrue(RecordingMode.microphone.capturesMicrophone)
         XCTAssertFalse(RecordingMode.microphone.capturesApplication)
         XCTAssertFalse(RecordingMode.applicationOnly.capturesMicrophone)

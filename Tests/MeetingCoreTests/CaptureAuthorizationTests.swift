@@ -23,7 +23,7 @@ final class CaptureAuthorizationTests: XCTestCase {
         let wrapper = NSError(domain: "wrapper", code: 1, userInfo: [NSUnderlyingErrorKey: denial])
         for error in [denial, wrapper] {
             XCTAssertEqual(CaptureErrorPresentation.permission(for: error), .systemAudio)
-            XCTAssertTrue(CaptureErrorPresentation.message(for: error).contains("Privacidad y seguridad"))
+            XCTAssertTrue(CaptureErrorPresentation.message(for: error).contains("Privacy & Security"))
             XCTAssertTrue(CaptureErrorPresentation.message(for: error).contains("Mantis"))
         }
         let unrelated = NSError(domain: "disk", code: 1, userInfo: [NSLocalizedDescriptionKey: "Disco lleno"])

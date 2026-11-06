@@ -10,6 +10,9 @@ final class AppModel: ObservableObject {
     @Published private(set) var meetings: [Meeting] = []
     @Published var selection: UUID?
     @Published var settingsPage: MantisSettingsPage = .general
+    @Published var language = AppLanguage.selected() {
+        didSet { if !isPreview { UserDefaults.standard.set(language.rawValue, forKey: AppLanguage.preferenceKey) } }
+    }
     @Published var mode = RecordingMode(rawValue: UserDefaults.standard.string(forKey: "recordingMode") ?? "") ?? .systemAndMicrophone {
         didSet { UserDefaults.standard.set(mode.rawValue, forKey: "recordingMode") }
     }
@@ -71,11 +74,11 @@ final class AppModel: ObservableObject {
             models = nil
             store = nil
             showingOnboarding = false
-            let sample = Meeting(title: "Planificación del equipo", mode: .systemAndMicrophone, audioFileName: "Reunión.m4a", status: .completed)
+            let sample = Meeting(title: AppLocalization.text("Planificación del equipo"), mode: .systemAndMicrophone, audioFileName: "Reunión.m4a", status: .completed)
             var ready = sample
             ready.duration = 1475
-            ready.transcript = "Revisamos los avances de la semana y acordamos las prioridades del próximo ciclo.\n\nEl equipo preparará una propuesta con los cambios discutidos. La próxima revisión será el viernes."
-            meetings = [ready, Meeting(title: "Revisión de proyecto", mode: .systemAudio, audioFileName: "Audio.m4a")]
+            ready.transcript = AppLocalization.text("Revisamos los avances de la semana y acordamos las prioridades del próximo ciclo.\n\nEl equipo preparará una propuesta con los cambios discutidos. La próxima revisión será el viernes.")
+            meetings = [ready, Meeting(title: AppLocalization.text("Revisión de proyecto"), mode: .systemAudio, audioFileName: "Audio.m4a")]
             selection = ready.id
             permissionSnapshot = CaptureAuthorizationSnapshot(microphone: .allowed, systemAudio: .allowed)
             return

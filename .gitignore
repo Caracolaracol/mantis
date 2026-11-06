@@ -31,4 +31,6 @@ website/node_modules/
 website/dist/
 website/.astro/
 website/public/images/library.png
+website/public/images/library-es.png
 website/public/images/mantis.svg
+website/public/images/mantis-mark.svg

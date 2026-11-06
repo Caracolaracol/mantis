@@ -1,13 +1,23 @@
 # Cambios
 
-## Sin publicar
+## 0.3.0 — 2026-11-06
+
+- App y sitio en inglés y español, con inglés predeterminado. Selector de idioma en bienvenida/General y EN/ES en todas las páginas del sitio.
+- Catálogo compartido de traducciones y tablas nativas, incluidos mensajes, modelos, menús y permisos. Los títulos y textos del usuario se conservan sin traducir.
+- Nuevo titular: “What you hear, Mantis records.” / “Lo que escuchas, Mantis lo graba.” Sin la frase superior ni la línea de subir grabaciones a una nube.
+- Logo de cabeza de mantis sin recuadro, más grande; caracol del autor más pequeño.
+- Brazo de mantis animado detrás del contenido, con ataque ocasional y silueta que se desvanece. Respeta pausa, movimiento reducido y pestañas ocultas.
+- Capturas ficticias de la app en cada idioma y widget SketchyBar que sigue el idioma publicado por la app.
+- 87 pruebas Swift, 12 Python y 7 del sitio; capturas nativas y seis páginas revisadas en móvil, tablet y escritorio.
+
+La app mantiene firma ad hoc: actualizar puede requerir renovar la autorización de audio desde Settings → Privacy / Ajustes → Privacidad. No se restablecen permisos automáticamente.
 
 - Sitio Astro en `website/`, publicado en GitHub Pages: portada, documentación, licencia y descarga del DMG.
 - Paleta verde/rosa de Mantis, textura de grano animada con pausa y soporte de movimiento reducido, y caracol del autor enlazado a su portafolio.
 
 - Widget reutilizable para SketchyBar en `integrations/sketchybar/mantis.sh`, con guía en README.
 - Plugin configurable con detección de SketchyBar y ruta predeterminada de la app instalada.
-- 11 pruebas de integración en dry-run; no requieren iniciar grabaciones ni modificar la barra.
+- Pruebas de integración en dry-run; no requieren iniciar grabaciones ni modificar la barra.
 
 ## 0.2.2 — 2026-11-05
 

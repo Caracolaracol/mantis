@@ -1,4 +1,5 @@
 import AppKit
+import MeetingCore
 import SwiftUI
 
 struct PermissionResetView: View {
@@ -11,17 +12,17 @@ struct PermissionResetView: View {
                 .font(.headline).foregroundStyle(MantisTheme.pink)
             Text("Úsalo si macOS muestra a Mantis como autorizada, pero la app no puede acceder al audio del computador después de una actualización.")
                 .font(.callout).foregroundStyle(MantisTheme.secondary)
-            Button(model.systemAudioPermissionResetState == .running ? "Restableciendo…" : "Restablecer permiso de audio…") {
+            Button(AppLocalization.text(model.systemAudioPermissionResetState == .running ? "Restableciendo…" : "Restablecer permiso de audio…")) {
                 confirmingReset = true
             }.disabled(model.busy || model.loadingApplications || model.systemAudioPermissionResetState == .requiresRestart)
             Text("Solo se restablece el permiso de pantalla y audio del sistema de Mantis. No se tocan el micrófono, otras apps ni tus archivos. Tendrás que salir, volver a abrir Mantis y autorizarla de nuevo.")
                 .font(.caption).foregroundStyle(MantisTheme.secondary)
             switch model.systemAudioPermissionResetState {
             case .requiresRestart:
-                Text(SystemAudioPermissionReset.restartMessage).font(.callout).foregroundStyle(MantisTheme.green)
+                Text(AppLocalization.text(SystemAudioPermissionReset.restartMessage)).font(.callout).foregroundStyle(MantisTheme.green)
                 Button("Salir de Mantis") { NSApp.terminate(nil) }.disabled(model.busy)
             case .failed(let message):
-                Text("No se pudo restablecer el permiso: \(message)").font(.caption).foregroundStyle(MantisTheme.pink).textSelection(.enabled)
+                Text(AppLocalization.format("No se pudo restablecer el permiso: %@", AppLocalization.message(message))).font(.caption).foregroundStyle(MantisTheme.pink).textSelection(.enabled)
             case .idle, .running: EmptyView()
             }
         }.mantisCard()

@@ -13,12 +13,12 @@ WIDGET = SCRIPT.parent.parent / "integrations/sketchybar/mantis.sh"
 
 
 class SketchyBarTests(unittest.TestCase):
-    def run_script(self, state=None, click=False, button="left", age=0, pid=None, sender="routine"):
+    def run_script(self, state=None, click=False, button="left", age=0, pid=None, sender="routine", language="en"):
         with tempfile.TemporaryDirectory(prefix="recorder-bar-test-") as directory:
             if state:
                 Path(directory, "status.json").write_text(json.dumps({
                     "state": state, "pid": os.getpid() if pid is None else pid,
-                    "elapsedSeconds": 125, "updatedAt": time.time() - age,
+                    "elapsedSeconds": 125, "updatedAt": time.time() - age, "language": language,
                 }))
             env = dict(os.environ, MEETING_RECORDER_CONTROL=directory,
                        MEETING_RECORDER_DRY_RUN="1", BUTTON=button, SENDER=sender)
@@ -27,7 +27,7 @@ class SketchyBarTests(unittest.TestCase):
                                            env=env, text=True)
 
     def test_offline(self):
-        self.assertIn("state=offline label=Grabar label_color=0xffccd7e4", self.run_script())
+        self.assertIn("state=offline label=Record label_color=0xffccd7e4", self.run_script())
 
     def test_recording(self):
         self.assertIn("state=recording label=REC 02:05 label_color=0xffd94a6d", self.run_script("recording"))
@@ -60,6 +60,11 @@ class SketchyBarTests(unittest.TestCase):
 
     def test_default_app_is_installed_bundle(self):
         self.assertIn("/Applications/Mantis.app/Contents/MacOS/MeetingRecorder", self.run_script("idle", click=True))
+
+    def test_spanish_labels_follow_application_language(self):
+        self.assertIn("label=Grabar", self.run_script("idle", language="es"))
+        self.assertIn("label=Transcribiendo", self.run_script("transcribing", language="es"))
+        self.assertIn("label=Transcribing", self.run_script("transcribing", language="en"))
 
     def test_widget_registers_and_quotes_custom_paths_without_recording(self):
         with tempfile.TemporaryDirectory(prefix="mantis widget ") as directory:

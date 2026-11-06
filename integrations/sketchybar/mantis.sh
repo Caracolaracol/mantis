@@ -18,7 +18,7 @@ SKETCHYBAR_BIN="${SKETCHYBAR_BIN:-$(command -v sketchybar || true)}"
 printf -v COMMAND '%q ' /usr/bin/env "MEETING_RECORDER_APP=$APP" "SKETCHYBAR_BIN=$SKETCHYBAR_BIN" /bin/bash "$PLUGIN"
 
 "$SKETCHYBAR_BIN" --add item "$ITEM" "$POSITION" \
-  --set "$ITEM" icon='●' label='Grabar' \
+  --set "$ITEM" icon='●' label='Record' \
     icon.color=0xff9b7fd4 label.color=0xffccd7e4 \
     update_freq=1 updates=on script="$COMMAND" \
   --subscribe "$ITEM" mouse.clicked system_woke

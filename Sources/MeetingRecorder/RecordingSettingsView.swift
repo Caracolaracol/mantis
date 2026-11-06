@@ -57,13 +57,13 @@ struct CapturePermissionsView: View {
                 }.padding(.vertical, 5)
             }
             HStack {
-                Button(model.configuringPermissions ? "Solicitando…" : "Solicitar accesos") {
+                Button(AppLocalization.text(model.configuringPermissions ? "Solicitando…" : "Solicitar accesos")) {
                     Task { await model.requestConfiguredPermissions() }
                 }.disabled(model.busy)
                 Button("Actualizar estado", action: model.refreshPermissions).disabled(model.busy)
             }
             if let message = model.permissionSetupMessage {
-                Text(message).font(.caption).foregroundStyle(MantisTheme.pink).textSelection(.enabled)
+                Text(AppLocalization.message(message)).font(.caption).foregroundStyle(MantisTheme.pink).textSelection(.enabled)
             }
             Text("El audio del computador usa el permiso Grabación de pantalla y audio del sistema. Mantis nunca guarda imágenes ni video. Si macOS solicita reiniciar la app, sal desde el menú y vuelve a abrirla.")
                 .font(.caption).foregroundStyle(MantisTheme.secondary)

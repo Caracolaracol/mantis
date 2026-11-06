@@ -11,11 +11,13 @@ public struct RecorderStatus: Codable, Equatable, Sendable {
     public var pid: Int32
     public var elapsedSeconds: Int
     public var updatedAt: TimeInterval
+    public var language: String?
     public init(state: State, elapsedSeconds: Int = 0) {
         self.state = state
         self.pid = ProcessInfo.processInfo.processIdentifier
         self.elapsedSeconds = elapsedSeconds
         self.updatedAt = Date().timeIntervalSince1970
+        self.language = AppLanguage.selected().rawValue
     }
 }
 

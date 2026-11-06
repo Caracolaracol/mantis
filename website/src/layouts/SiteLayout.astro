@@ -1,12 +1,14 @@
 ---
 import '../styles/global.css';
-import { href, site } from '../lib/site';
-interface Props { title: string; description: string; section?: string; }
-const { title, description, section = 'home' } = Astro.props;
+import MantisAttack from '../components/MantisAttack.astro';
+import { href, site, localizedHref, type Language, type Section } from '../lib/site';
+interface Props { title: string; description: string; section?: Section; language?: Language; }
+const { title, description, section = 'home', language = 'en' } = Astro.props;
+const t = (en: string, es: string) => language === 'es' ? es : en;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 <!doctype html>
-<html lang="es">
+<html lang={language}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -17,52 +19,74 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content={language === 'es' ? 'es_CL' : 'en_US'} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={new URL(href('images/library.png'), Astro.site)} />
+    <meta property="og:image" content={new URL(href(language === 'es' ? 'images/library-es.png' : 'images/library.png'), Astro.site)} />
     <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={new URL(localizedHref('en', section), Astro.site)} />
+    <link rel="alternate" hreflang="es" href={new URL(localizedHref('es', section), Astro.site)} />
+    <link rel="alternate" hreflang="x-default" href={new URL(localizedHref('en', section), Astro.site)} />
     <link rel="icon" type="image/svg+xml" href={href('images/mantis.svg')} />
     <title>{title}</title>
     <noscript><style>.grain::before { animation: none !important; }</style></noscript>
   </head>
   <body>
-    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <a class="skip-link" href="#contenido">{t('Skip to content', 'Saltar al contenido')}</a>
     <div class="grain" aria-hidden="true" style={`--noise: url('${href('images/grain.svg')}')`}></div>
+    <MantisAttack />
     <header class="site-header wrap">
-      <a class="brand" href={href()} aria-label="Mantis, inicio"><img src={href('images/mantis.svg')} width="40" height="40" alt="" /><span>Mantis<span class="brand-caption">PARA MACOS</span></span></a>
-      <nav aria-label="Principal">
-        <a href={href('documentacion/')} aria-current={section === 'docs' ? 'page' : undefined}>Documentación</a>
-        <a href={href('licencia/')} aria-current={section === 'license' ? 'page' : undefined}>Licencia</a>
+      <a class="brand" href={localizedHref(language)} aria-label={t('Mantis, home', 'Mantis, inicio')}><img class="brand-mark" src={href('images/mantis-mark.svg')} width="64" height="64" alt="" /><span>Mantis<span class="brand-caption">{t('FOR MACOS', 'PARA MACOS')}</span></span></a>
+      <nav aria-label={t('Main navigation', 'Principal')}>
+        <a href={localizedHref(language, 'docs')} aria-current={section === 'docs' ? 'page' : undefined}>{t('Documentation', 'Documentación')}</a>
+        <a href={localizedHref(language, 'license')} aria-current={section === 'license' ? 'page' : undefined}>{t('License', 'Licencia')}</a>
         <a class="nav-github" href={site.repo}>GitHub <span aria-hidden="true">↗</span></a>
       </nav>
-      <a class="snail-link" href={site.portfolio} target="_blank" rel="noopener noreferrer" aria-label="Visitar el portafolio de Agustín Rojas (abre otra pestaña)" title="Hecho por Agustín Rojas"><img src={href('images/caracol.png')} width="60" height="48" alt="" /></a>
+      <div class="language-switch" aria-label={t('Language', 'Idioma')}><a href={localizedHref('en', section)} lang="en" hreflang="en" aria-current={language === 'en' ? 'true' : undefined}>EN</a><span aria-hidden="true">/</span><a href={localizedHref('es', section)} lang="es" hreflang="es" aria-current={language === 'es' ? 'true' : undefined}>ES</a></div>
+      <a class="snail-link" href={site.portfolio} target="_blank" rel="noopener noreferrer" aria-label={t('Visit Agustín Rojas’s portfolio (opens a new tab)', 'Visitar el portafolio de Agustín Rojas (abre otra pestaña)')} title={t('Made by Agustín Rojas', 'Hecho por Agustín Rojas')}><img src={href('images/caracol.png')} width="35" height="28" alt="" /></a>
     </header>
     <main id="contenido"><slot /></main>
     <footer class="site-footer wrap">
-      <div><a class="footer-brand" href={href()}>Mantis<span aria-hidden="true">.</span></a><p>Un proyecto independiente de <a href={site.portfolio}>Agustín Rojas</a>.</p></div>
-      <div class="footer-links"><a href={site.repo}>Código en GitHub ↗</a><a href={href('documentacion/')}>Documentación</a><a href={href('licencia/')}>Licencia MIT</a><button id="grain-toggle" type="button" aria-pressed="false" hidden>Pausar textura</button></div>
-      <p class="footer-note">Solo audio. Hecho para quedarse en tu Mac.<br />© 2026 Agustín Rojas · MIT</p>
+      <div><a class="footer-brand" href={localizedHref(language)}>Mantis<span aria-hidden="true">.</span></a><p>{t('An independent project by', 'Un proyecto independiente de')} <a href={site.portfolio}>Agustín Rojas</a>.</p></div>
+      <div class="footer-links"><a href={site.repo}>{t('Source on GitHub', 'Código en GitHub')} ↗</a><a href={localizedHref(language, 'docs')}>{t('Documentation', 'Documentación')}</a><a href={localizedHref(language, 'license')}>{t('MIT license', 'Licencia MIT')}</a><button id="grain-toggle" type="button" aria-pressed="false" hidden>{t('Pause motion', 'Pausar movimiento')}</button></div>
+      <p class="footer-note">{t('Audio only. Made to stay on your Mac.', 'Solo audio. Hecho para quedarse en tu Mac.')}<br />© 2026 Agustín Rojas · MIT</p>
     </footer>
     <script>
       const button = document.querySelector<HTMLButtonElement>('#grain-toggle');
       const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const spanish = document.documentElement.lang === 'es';
+      const attack = document.querySelector<HTMLElement>('.mantis-attack');
       let paused = preference.matches;
-      try { paused = preference.matches || localStorage.getItem('mantis-grain-paused') === 'true'; } catch { /* Storage is optional. */ }
+      let attackTimer: ReturnType<typeof setTimeout> | undefined;
+      try { paused = preference.matches || localStorage.getItem('mantis-grain-paused') === 'true'; } catch { /* Optional storage. */ }
+      function scheduleAttack(first = false) {
+        clearTimeout(attackTimer);
+        if (!attack || paused || preference.matches || document.hidden) { attack?.classList.remove('is-attacking'); return; }
+        attackTimer = setTimeout(() => {
+          if (paused || preference.matches || document.hidden) return;
+          attack.classList.remove('is-attacking');
+          void attack.offsetWidth;
+          attack.classList.add('is-attacking');
+          scheduleAttack();
+        }, first ? 16000 : 26000 + Math.random() * 26000);
+      }
       function update() {
         document.documentElement.dataset.grainPaused = String(paused || preference.matches);
         if (button) {
           button.hidden = false;
           button.disabled = preference.matches;
           button.setAttribute('aria-pressed', String(paused || preference.matches));
-          button.textContent = preference.matches ? 'Movimiento reducido' : paused ? 'Animar textura' : 'Pausar textura';
+          button.textContent = preference.matches ? (spanish ? 'Movimiento reducido' : 'Reduced motion') : paused ? (spanish ? 'Animar fondo' : 'Resume motion') : (spanish ? 'Pausar movimiento' : 'Pause motion');
         }
+        scheduleAttack(true);
       }
       button?.addEventListener('click', () => {
         paused = !paused;
-        try { localStorage.setItem('mantis-grain-paused', String(paused)); } catch { /* No storage needed. */ }
+        try { localStorage.setItem('mantis-grain-paused', String(paused)); } catch { /* Optional storage. */ }
         update();
       });
       preference.addEventListener('change', update);
-      document.addEventListener('visibilitychange', () => { document.documentElement.dataset.pageHidden = String(document.hidden); });
+      document.addEventListener('visibilitychange', () => { document.documentElement.dataset.pageHidden = String(document.hidden); scheduleAttack(true); });
+      window.addEventListener('pagehide', () => clearTimeout(attackTimer));
       update();
     </script>
   </body>

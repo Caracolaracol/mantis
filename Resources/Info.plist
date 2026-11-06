@@ -6,19 +6,21 @@
     <key>CFBundleIdentifier</key><string>local.agus.MeetingRecorder</string>
     <key>CFBundleName</key><string>Mantis</string>
     <key>CFBundleDisplayName</key><string>Mantis</string>
+    <key>CFBundleDevelopmentRegion</key><string>en</string>
+    <key>CFBundleLocalizations</key><array><string>en</string><string>es</string></array>
     <key>CFBundlePackageType</key><string>APPL</string>
     <key>CFBundleIconFile</key><string>Mantis.icns</string>
-    <key>CFBundleShortVersionString</key><string>0.2.2</string>
-    <key>CFBundleVersion</key><string>5</string>
+    <key>CFBundleShortVersionString</key><string>0.3.0</string>
+    <key>CFBundleVersion</key><string>6</string>
     <key>LSMinimumSystemVersion</key><string>15.0</string>
     <key>LSApplicationCategoryType</key><string>public.app-category.productivity</string>
     <key>NSPrincipalClass</key><string>NSApplication</string>
     <key>NSHighResolutionCapable</key><true/>
     <key>NSMicrophoneUsageDescription</key>
-    <string>Mantis necesita acceso a la entrada seleccionada (micrófono o interfaz de audio) para guardar sus canales en las grabaciones que decidas iniciar.</string>
+    <string>Mantis needs access to the selected microphone or audio interface to save its channels in recordings you choose to start.</string>
     <key>NSScreenCaptureUsageDescription</key>
-    <string>Mantis usa ScreenCaptureKit para capturar el audio de todo el computador o de la aplicación que selecciones. No guarda imágenes ni video.</string>
+    <string>Mantis uses ScreenCaptureKit to capture audio from the computer or the app you select. It does not save images or video.</string>
     <key>NSAudioCaptureUsageDescription</key>
-    <string>Mantis necesita capturar el audio del computador para guardar y transcribir tus reuniones. No se guarda video.</string>
+    <string>Mantis needs computer audio access to save and transcribe your recordings. No video is saved.</string>
 </dict>
 </plist>

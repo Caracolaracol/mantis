@@ -168,7 +168,7 @@ final class CaptureOutputTests: XCTestCase {
     func testWriterReportsMissingAudio() async throws {
         let output = try CaptureOutput(destination: directory().appendingPathComponent("empty.mov"), includeMicrophone: true) { _ in }
         do { try await output.finish(); XCTFail("Expected missing audio error") }
-        catch { XCTAssertTrue(error.localizedDescription.contains("muestras")) }
+        catch { XCTAssertTrue(error.localizedDescription.contains("samples")) }
     }
 
     func testInputRouteSelectsOnlyRequestedChannels() throws {

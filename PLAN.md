@@ -1,6 +1,6 @@
 # Mantis — estado y próximos pasos
 
-## Implementado en 0.2.2
+## Implementado en 0.3.0
 
 - [x] App nativa macOS 15+ con SwiftUI/AppKit y barra de menús.
 - [x] Cinco modos de captura de solo audio y selección de entrada/canales.
@@ -15,11 +15,13 @@
 - [x] Restablecimiento confirmado y acotado del permiso de pantalla/audio de Mantis.
 - [x] Control local de instancia única, CLI e integración opcional con SketchyBar.
 - [x] Scripts de bundle, firma local, DMG y verificación de solo lectura.
+- [x] Inglés y español en bienvenida, ajustes, biblioteca, modelos, mensajes y barra de menús; inglés por defecto y selección persistente.
+- [x] Tablas nativas EN/ES generadas desde un catálogo compartido, sin traducir datos del usuario.
 
 ## Validación automatizada
 
-- [x] 81 pruebas Swift con integraciones locales y vistas sintéticas.
-- [x] 11 pruebas Python de SketchyBar en modo dry-run, incluidos registro del widget y rutas con espacios/comillas.
+- [x] 87 pruebas Swift con integraciones locales, localización y vistas sintéticas.
+- [x] 12 pruebas Python de SketchyBar en modo dry-run, incluidos idioma, registro del widget y rutas con espacios/comillas.
 - [x] Las pruebas de recuperación de permisos usan un ejecutor falso: no ejecutan `tccutil` real.
 - [x] Las pruebas de inicio de sesión usan un servicio falso: no registran la app al login.
 
@@ -39,7 +41,9 @@
 - [x] Astro estático en `website/`, sin backend ni servicios de analítica.
 - [x] Portada con captura sintética, documentación, licencia MIT, descarga y enlace al autor con su caracol.
 - [x] Paleta verde bosque/rosa claro y grano SVG animado mediante CSS, con pausa, pestaña oculta y movimiento reducido.
-- [x] Cinco pruebas de estructura, recursos, enlaces, licencia y límites; navegador revisado en 375/768/1440 px.
+- [x] Inglés por defecto, español y páginas equivalentes enlazadas con selector EN/ES y hreflang.
+- [x] Cabeza de mantis sin recuadro como logo, caracol menor y ataque SVG ocasional con silueta que desaparece.
+- [x] Siete pruebas de estructura, idiomas, recursos, enlaces, licencia y efectos; seis páginas revisadas en 375/768/1440 px.
 - [x] Workflow GitHub Pages con lockfile, acciones fijadas a commit y permisos de despliegue limitados.
 
 ## Próximas mejoras

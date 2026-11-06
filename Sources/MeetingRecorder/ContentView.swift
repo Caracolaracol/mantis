@@ -38,7 +38,7 @@ struct ContentView: View {
         .onChange(of: scenePhase) { _, phase in if phase == .active { model.refreshPermissions() } }
         .alert("Mantis", isPresented: Binding(get: { model.alert != nil }, set: { if !$0 { model.alert = nil } })) {
             Button("Aceptar") { model.alert = nil }
-        } message: { Text(model.alert ?? "") }
+        } message: { Text(AppLocalization.message(model.alert ?? "")) }
         .alert("¿Eliminar esta grabación?", isPresented: $confirmDeletion) {
             Button("Cancelar", role: .cancel) {}
             Button("Eliminar audio y texto", role: .destructive) { model.deleteSelected() }
@@ -47,7 +47,7 @@ struct ContentView: View {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Renombrar grabación").font(.title3.bold()).foregroundStyle(MantisTheme.pink)
                 TextField("Nombre", text: $editedTitle).textFieldStyle(.roundedBorder)
-                if let renameError { Text(renameError).font(.caption).foregroundStyle(MantisTheme.pink) }
+                if let renameError { Text(AppLocalization.message(renameError)).font(.caption).foregroundStyle(MantisTheme.pink) }
                 HStack {
                     Spacer()
                     Button("Cancelar") { meetingToRename = nil }.keyboardShortcut(.cancelAction)
@@ -78,7 +78,7 @@ struct ContentView: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 18) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(model.activeMeetingID != nil ? "GRABANDO" : "TU AUDIO, EN ESTE MAC")
+                    Text(AppLocalization.text(model.activeMeetingID != nil ? "GRABANDO" : "TU AUDIO, EN ESTE MAC"))
                         .font(.caption2.weight(.bold)).tracking(1.5)
                         .foregroundStyle(model.activeMeetingID != nil ? Color.red : MantisTheme.green)
                     if model.activeMeetingID != nil {
@@ -86,7 +86,7 @@ struct ContentView: View {
                     } else {
                         Text(model.mode.title).font(.title3.weight(.semibold))
                     }
-                    Text(model.automaticTranscription ? "Guardar audio y transcribir al detener" : "Guardar audio · transcribir cuando tú quieras")
+                    Text(AppLocalization.text(model.automaticTranscription ? "Guardar audio y transcribir al detener" : "Guardar audio · transcribir cuando tú quieras"))
                         .font(.caption).foregroundStyle(MantisTheme.secondary)
                 }
                 Spacer()
@@ -96,7 +96,7 @@ struct ContentView: View {
                 } else if model.busy {
                     VStack(spacing: 8) {
                         ProgressView().controlSize(.small)
-                        Text(model.phase.isEmpty ? "Preparando…" : model.phase).font(.caption)
+                        Text(AppLocalization.message(model.phase.isEmpty ? "Preparando…" : model.phase)).font(.caption)
                     }.frame(maxWidth: 190)
                 } else {
                     Button("Grabar audio", systemImage: "record.circle.fill", action: model.startRecording)
@@ -137,8 +137,8 @@ struct ContentView: View {
             if visibleMeetings.isEmpty {
                 VStack(spacing: 8) {
                     Image(systemName: "waveform").font(.largeTitle).foregroundStyle(MantisTheme.green.opacity(0.7))
-                    Text(search.isEmpty ? "Tu biblioteca está lista" : "Sin resultados").font(.headline)
-                    Text(search.isEmpty ? "Las grabaciones guardadas aparecerán aquí." : "Prueba con otro nombre.")
+                    Text(AppLocalization.text(search.isEmpty ? "Tu biblioteca está lista" : "Sin resultados")).font(.headline)
+                    Text(AppLocalization.text(search.isEmpty ? "Las grabaciones guardadas aparecerán aquí." : "Prueba con otro nombre."))
                         .font(.caption).foregroundStyle(MantisTheme.secondary)
                 }.frame(maxWidth: .infinity).padding(.vertical, 25)
             } else {
@@ -152,7 +152,7 @@ struct ContentView: View {
                                         .frame(width: 30, height: 34)
                                     VStack(alignment: .leading, spacing: 4) {
                                         Text(meeting.title).font(.callout.weight(.semibold)).lineLimit(1)
-                                        Text(meeting.createdAt.formatted(date: .abbreviated, time: .shortened))
+                                        Text(meeting.createdAt.formatted(Date.FormatStyle(date: .abbreviated, time: .shortened).locale(model.language.locale)))
                                             .font(.caption2).foregroundStyle(MantisTheme.secondary)
                                     }
                                     Spacer()
@@ -160,7 +160,7 @@ struct ContentView: View {
                                     Image(systemName: "chevron.right").font(.caption2).foregroundStyle(MantisTheme.secondary)
                                 }.padding(10).contentShape(Rectangle())
                                     .background(model.selection == meeting.id ? MantisTheme.green.opacity(0.09) : Color.clear, in: RoundedRectangle(cornerRadius: 9))
-                            }.buttonStyle(.plain).accessibilityValue(model.selection == meeting.id ? "Seleccionada" : meeting.status.title)
+                            }.buttonStyle(.plain).accessibilityValue(model.selection == meeting.id ? AppLocalization.text("Seleccionada") : meeting.status.title)
                                 .modifier(AudioFileDragModifier(url: model.activeMeetingID == meeting.id ? nil : try? model.store?.audioURL(for: meeting)) {
                                     model.selection = meeting.id
                                 })
@@ -197,25 +197,25 @@ struct ContentView: View {
             HStack {
                 Button("Reproducir audio", systemImage: "play.fill") { model.openAudio(meeting) }.disabled(model.busy)
                 Spacer()
-                Button(meeting.transcript == nil ? "Transcribir" : "Volver a transcribir", systemImage: "text.alignleft") { model.transcribe(meeting.id) }
+                Button(AppLocalization.text(meeting.transcript == nil ? "Transcribir" : "Volver a transcribir"), systemImage: "text.alignleft") { model.transcribe(meeting.id) }
                     .disabled(model.busy || model.loadingApplications)
             }
             if model.processingID == meeting.id {
                 HStack {
                     ProgressView().controlSize(.small)
-                    Text(model.phase).font(.caption)
+                    Text(AppLocalization.message(model.phase)).font(.caption)
                     Spacer()
                     Button("Cancelar", action: model.cancelTranscription)
                 }
             }
             if let error = meeting.error {
-                DisclosureGroup("Aviso de esta grabación") { Text(error).font(.caption).foregroundStyle(MantisTheme.pink).textSelection(.enabled).padding(.top, 6) }
+                DisclosureGroup("Aviso de esta grabación") { Text(AppLocalization.message(error)).font(.caption).foregroundStyle(MantisTheme.pink).textSelection(.enabled).padding(.top, 6) }
                     .font(.caption).foregroundStyle(MantisTheme.pink)
             }
             Divider()
             if let transcript = meeting.transcript {
                 ScrollView {
-                    Text(transcript.isEmpty ? "No se detectó voz en el audio." : transcript)
+                    Text(transcript.isEmpty ? AppLocalization.text("No se detectó voz en el audio.") : transcript)
                         .font(.body).lineSpacing(6).textSelection(.enabled)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }.frame(height: 210)

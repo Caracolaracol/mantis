@@ -3,9 +3,9 @@ name: Mantis website
 on:
   push:
     branches: [main]
-    paths: ['website/**', 'docs/images/library.png', 'Resources/Brand/mantis-head.svg', 'LICENSE', '.github/workflows/website.yml']
+    paths: ['website/**', 'docs/images/**', 'Resources/Brand/mantis-head*.svg', 'LICENSE', '.github/workflows/website.yml']
   pull_request:
-    paths: ['website/**', 'docs/images/library.png', 'Resources/Brand/mantis-head.svg', 'LICENSE', '.github/workflows/website.yml']
+    paths: ['website/**', 'docs/images/**', 'Resources/Brand/mantis-head*.svg', 'LICENSE', '.github/workflows/website.yml']
   workflow_dispatch:
 
 permissions:

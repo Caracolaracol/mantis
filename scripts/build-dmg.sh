@@ -23,11 +23,11 @@ trap cleanup EXIT
 STAGE="$WORK/contents"
 mkdir "$STAGE"
 ditto "$APP" "$STAGE/Mantis.app"
-ln -s /Applications "$STAGE/Aplicaciones"
+ln -s /Applications "$STAGE/Applications"
 touch "$STAGE/.metadata_never_index"
 codesign --verify --deep --strict "$STAGE/Mantis.app"
 
-hdiutil create -srcfolder "$STAGE" -volname 'Mantis — Arrastra a Aplicaciones' \
+hdiutil create -srcfolder "$STAGE" -volname 'Mantis — Drag to Applications' \
   -fs HFS+ -format UDZO "$WORK/Mantis.dmg"
 hdiutil verify "$WORK/Mantis.dmg"
 mv -n "$WORK/Mantis.dmg" "$OUTPUT"

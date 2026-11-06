@@ -49,7 +49,7 @@ public enum ModelCatalog {
     public static func matching(_ query: String) -> [CatalogModel] {
         let query = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !query.isEmpty else { return models }
-        return models.filter { "\($0.name) \($0.details) \($0.license)".localizedStandardContains(query) }
+        return models.filter { "\($0.name) \($0.details) \(AppLocalization.text($0.details, language: .english)) \($0.license)".localizedStandardContains(query) }
     }
 
     public static func verify(file: URL, byteCount: Int64, sha256: String) throws {

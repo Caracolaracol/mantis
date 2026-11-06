@@ -9,13 +9,13 @@
 <p align="center">
   <img src="https://img.shields.io/badge/macOS-15%2B-black" alt="macOS 15 o posterior">
   <img src="https://img.shields.io/badge/plataforma-Apple%20Silicon-green" alt="Apple Silicon">
-  <img src="https://img.shields.io/badge/versión-0.2.2-pink" alt="Versión 0.2.2">
+  <img src="https://img.shields.io/badge/versión-0.3.0-pink" alt="Versión 0.3.0">
   <a href="LICENSE"><img src="https://img.shields.io/badge/licencia-MIT-blue" alt="Licencia MIT"></a>
 </p>
 
 Mantis graba el sonido del computador, un micrófono o una aplicación específica. Guarda archivos **M4A**, organiza una biblioteca local y permite transcribir con modelos que se ejecutan en tu Mac. No requiere cuenta, backend, Handy ni FFmpeg.
 
-**[Sitio de Mantis](https://caracolaracol.github.io/mantis/)** · **[Descargar DMG para Apple Silicon](https://github.com/Caracolaracol/mantis/releases/latest/download/Mantis-0.2.2.dmg)** · **[Releases y checksum](https://github.com/Caracolaracol/mantis/releases/latest)**
+**[Sitio de Mantis](https://caracolaracol.github.io/mantis/)** · **[Sitio en español](https://caracolaracol.github.io/mantis/es/)** · **[Descargar DMG para Apple Silicon](https://github.com/Caracolaracol/mantis/releases/download/v0.3.0/Mantis-0.3.0.dmg)** · **[Releases y checksum](https://github.com/Caracolaracol/mantis/releases/latest)**
 
 <p align="center">
   <img src="docs/images/library.png" width="650" alt="Biblioteca de Mantis con búsqueda, grabaciones y transcripción">
@@ -38,6 +38,8 @@ Mantis graba el sonido del computador, un micrófono o una aplicación específi
 - Recuperación de permisos desde **Ajustes → Privacidad**.
 
 La transcripción automática está **desactivada por defecto**. Puedes usar Mantis solo para grabar, sin descargar ningún modelo.
+
+La app y el sitio están disponibles en **inglés y español**, con **inglés por defecto**. Elige el idioma en la bienvenida o en **Settings → General → Language / Ajustes → General → Idioma**. La elección se conserva; no traduce ni modifica títulos, transcripciones o archivos existentes. Los diálogos propios de macOS pueden seguir el idioma del sistema.
 
 ## Requisitos
 
@@ -76,10 +78,10 @@ open build/Mantis.app
 
 ```bash
 ./scripts/build-dmg.sh
-./scripts/verify-dmg.sh build/Mantis-0.2.2.dmg
+./scripts/verify-dmg.sh build/Mantis-0.3.0.dmg
 ```
 
-Se generan `build/Mantis-0.2.2.dmg` y su archivo `.sha256`. El DMG contiene Mantis y un acceso a **Aplicaciones**:
+Se generan `build/Mantis-0.3.0.dmg` y su archivo `.sha256`. El DMG contiene Mantis y un acceso **Applications** hacia la carpeta Aplicaciones:
 
 1. Sal de cualquier versión de Mantis abierta; cerrar su ventana no termina la app.
 2. Abre el DMG y arrastra **Mantis.app** a **Aplicaciones**.
@@ -120,7 +122,7 @@ Abre **Ajustes** desde la cabecera o con `⌘,`:
 
 | Sección | Opciones |
 | --- | --- |
-| **General** | Iniciar en la barra de menús sin ventana y abrir al iniciar sesión en macOS. Ambas desactivadas por defecto. |
+| **General** | Idioma inglés/español, inicio sin ventana e inicio de sesión. Inglés por defecto; ambas opciones de inicio desactivadas. |
 | **Grabación** | Fuentes, aplicación, micrófono/interfaz y canales. |
 | **Modelos** | Catálogo, importación GGUF, descarga, modelo activo y transcripción automática. |
 | **Archivos** | Ubicación de los textos y de los audios, cada una con **Cambiar carpeta**. |
@@ -205,6 +207,8 @@ El identificador `local.agus.MeetingRecorder` y las rutas internas `MeetingRecor
 ### Sitio web
 
 El sitio estático vive en [`website/`](website/README.md), en este mismo repositorio: portada, documentación, licencia MIT y enlace al instalador. Usa Astro, la paleta de Mantis y grano animado con pausa y respeto por movimiento reducido. El botón del caracol enlaza al portafolio del autor.
+
+El sitio abre en inglés; el selector EN/ES conserva la página equivalente. Un brazo de mantis aparece ocasionalmente detrás del contenido y deja una silueta que se desvanece. El botón de pausa controla grano y ataque; ambos se desactivan con movimiento reducido y al ocultar la pestaña.
 
 ```bash
 cd website
@@ -301,10 +305,10 @@ Se crea el ítem **`mantis`** a la derecha, con actualización cada segundo. No 
 | Clic izquierdo grabando | Detiene y guarda; transcribe solo si activaste esa opción. |
 | Clic derecho | Abre Mantis. |
 | Clic durante preparación, transcripción o error | Abre Mantis sin iniciar otra grabación. |
-| `Grabar` | En reposo o app cerrada. |
+| `Record` / `Grabar` | En reposo o app cerrada; sigue el idioma que publica Mantis. |
 | `REC mm:ss` rojo | Grabación en curso. |
-| `Preparando` / `Transcribiendo` | Operación en curso. |
-| `Revisar` / `Falta app` | Error o bundle no encontrado. |
+| `Preparing` / `Preparando`, `Transcribing` / `Transcribiendo` | Operación en curso. |
+| `Review` / `Revisar`, `Missing app` / `Falta app` | Error o bundle no encontrado. |
 
 Las actualizaciones periódicas y el evento de despertar del equipo **no empiezan grabaciones**. El plugin comprueba que el PID esté vivo y que el estado tenga menos de cinco segundos. La bienvenida y los permisos siguen siendo obligatorios: configura y autoriza Mantis antes de usar el widget. Grabar desde el widget es una acción explícita; avisa a los participantes.
 

@@ -44,6 +44,9 @@ struct OnboardingView: View {
                         .font(.callout).foregroundStyle(MantisTheme.secondary)
                 }
                 Spacer()
+                Picker("Idioma", selection: $model.language) {
+                    ForEach(AppLanguage.allCases) { language in Text(verbatim: language.name).tag(language) }
+                }.labelsHidden().frame(width: 110).disabled(model.busy || navigation.advancing)
                 Text("Paso \(step + 1) de \(steps.count)").font(.caption.weight(.semibold)).foregroundStyle(MantisTheme.green)
                     .padding(.horizontal, 11).padding(.vertical, 7).background(MantisTheme.green.opacity(0.08), in: Capsule())
             }
@@ -51,7 +54,7 @@ struct OnboardingView: View {
                 ForEach(steps.indices, id: \.self) { index in
                     VStack(alignment: .leading, spacing: 6) {
                         Capsule().fill(index <= step ? MantisTheme.green : MantisTheme.border).frame(height: 3)
-                        Text(steps[index]).font(.caption).foregroundStyle(index == step ? MantisTheme.pink : MantisTheme.secondary)
+                        Text(AppLocalization.text(steps[index])).font(.caption).foregroundStyle(index == step ? MantisTheme.pink : MantisTheme.secondary)
                     }
                 }
             }
@@ -63,7 +66,7 @@ struct OnboardingView: View {
                     case 2: permissionStep
                     default: transcriptionStep
                     }
-                    if let error { Text(error).font(.callout).foregroundStyle(.red).textSelection(.enabled) }
+                    if let error { Text(AppLocalization.message(error)).font(.callout).foregroundStyle(.red).textSelection(.enabled) }
                 }.frame(maxWidth: .infinity, alignment: .leading).mantisCard()
             }
             HStack {
@@ -72,7 +75,7 @@ struct OnboardingView: View {
                 if step > 0 {
                     Button("Atrás") { error = nil; navigation.back() }.disabled(model.busy || navigation.advancing)
                 }
-                Button(step == 3 ? transcriptionChoice.confirmationTitle : navigation.primaryTitle(changingLibrary: !libraryApplied)) {
+                Button(AppLocalization.text(step == 3 ? transcriptionChoice.confirmationTitle : navigation.primaryTitle(changingLibrary: !libraryApplied))) {
                     error = nil
                     Task {
                         do {
@@ -160,11 +163,11 @@ struct OnboardingView: View {
                 .foregroundStyle(MantisTheme.secondary)
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(transcriptionChoice.modelFileName == nil ? "Solo guardar audio" : "Modelo elegido")
+                    Text(AppLocalization.text(transcriptionChoice.modelFileName == nil ? "Solo guardar audio" : "Modelo elegido"))
                         .font(.caption).foregroundStyle(MantisTheme.secondary)
-                    Text(transcriptionChoice.modelFileName.flatMap { id in
+                    Text(AppLocalization.text(transcriptionChoice.modelFileName.flatMap { id in
                         model.localModels.first(where: { $0.id == id })?.name
-                    } ?? "Puedes elegirlo más adelante").font(.callout.weight(.medium))
+                    } ?? "Puedes elegirlo más adelante")).font(.callout.weight(.medium))
                 }
                 Spacer()
                 Button("Elegir después") { transcriptionChoice.modelFileName = nil }.disabled(model.busy)
@@ -190,8 +193,8 @@ struct OnboardingView: View {
 
     private func chooseLibrary() {
         let panel = NSOpenPanel()
-        panel.title = "Elegir carpeta de grabaciones de Mantis"
-        panel.prompt = "Elegir carpeta"
+        panel.title = AppLocalization.text("Elegir carpeta de grabaciones de Mantis")
+        panel.prompt = AppLocalization.text("Elegir carpeta")
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
         panel.canCreateDirectories = true

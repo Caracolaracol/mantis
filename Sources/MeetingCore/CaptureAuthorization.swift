@@ -4,16 +4,16 @@ public enum CapturePermissionKind: String, CaseIterable, Identifiable, Sendable 
     case microphone, systemAudio
     public var id: String { rawValue }
     public var title: String {
-        self == .microphone ? "Entrada de audio (permiso Micrófono)" : "Audio del computador"
+        AppLocalization.text(self == .microphone ? "Entrada de audio (permiso Micrófono)" : "Audio del computador")
     }
     public var settingsURL: URL {
         URL(string: "x-apple.systempreferences:com.apple.preference.security?\(self == .microphone ? "Privacy_Microphone" : "Privacy_ScreenCapture")")!
     }
     public var settingsSection: String {
-        self == .microphone ? "Micrófono" : "Grabación de pantalla y audio del sistema"
+        AppLocalization.text(self == .microphone ? "Micrófono" : "Grabación de pantalla y audio del sistema")
     }
     public var recoveryMessage: String {
-        "macOS no autorizó el acceso \(self == .microphone ? "a tu micrófono" : "al audio del computador"). Revisa Ajustes del Sistema → Privacidad y seguridad → \(settingsSection). Si Mantis ya está activado, sal completamente desde su menú y vuelve a abrirlo; cerrar la ventana no termina la app. Tras recompilar, el permiso puede corresponder a una versión anterior y necesitar volver a autorizarse."
+        AppLocalization.format("macOS no autorizó el acceso %@. Revisa Ajustes del Sistema → Privacidad y seguridad → %@. Si Mantis ya está activado, sal completamente desde su menú y vuelve a abrirlo; cerrar la ventana no termina la app. Tras recompilar, el permiso puede corresponder a una versión anterior y necesitar volver a autorizarse.", AppLocalization.text(self == .microphone ? "a tu micrófono" : "al audio del computador"), settingsSection)
     }
 }
 
@@ -21,11 +21,11 @@ public enum CaptureAuthorizationState: String, Sendable {
     case allowed, notRequested, denied, restricted, unverified
     public var title: String {
         switch self {
-        case .allowed: return "Autorizado"
-        case .notRequested: return "Por autorizar"
-        case .denied: return "Sin acceso"
-        case .restricted: return "Restringido por el sistema"
-        case .unverified: return "No confirmado para esta versión"
+        case .allowed: return AppLocalization.text("Autorizado")
+        case .notRequested: return AppLocalization.text("Por autorizar")
+        case .denied: return AppLocalization.text("Sin acceso")
+        case .restricted: return AppLocalization.text("Restringido por el sistema")
+        case .unverified: return AppLocalization.text("No confirmado para esta versión")
         }
     }
 
@@ -78,6 +78,8 @@ public enum CaptureErrorPresentation {
         let lower = message.lowercased()
         if lower.contains("tcc"), lower.contains("captur") || lower.contains("screen") { return .systemAudio }
         if lower.contains("macos no autorizó el acceso al audio del computador") { return .systemAudio }
+        if lower.contains("macos did not authorize access to computer audio") { return .systemAudio }
+        if lower.contains("macos did not authorize access to your microphone") { return .microphone }
         if lower.contains("autoriza el micrófono") || lower.contains("macos no autorizó el acceso a tu micrófono") { return .microphone }
         return nil
     }

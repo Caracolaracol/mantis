@@ -21,9 +21,20 @@ mkdir "$MOUNT"
 hdiutil verify "$IMAGE"
 hdiutil attach -readonly -nobrowse -mountpoint "$MOUNT" "$IMAGE"
 MOUNTED=1
-[[ -d "$MOUNT/Mantis.app" && -L "$MOUNT/Aplicaciones" ]] || { printf 'Faltan los elementos para instalar arrastrando.\n' >&2; exit 1; }
-[[ "$(readlink "$MOUNT/Aplicaciones")" = /Applications ]] || { printf 'Destino de Aplicaciones incorrecto.\n' >&2; exit 1; }
+APPLICATIONS_LINK="$MOUNT/Applications"
+[[ -L "$APPLICATIONS_LINK" ]] || APPLICATIONS_LINK="$MOUNT/Aplicaciones"
+[[ -d "$MOUNT/Mantis.app" && -L "$APPLICATIONS_LINK" ]] || { printf 'Faltan los elementos para instalar arrastrando.\n' >&2; exit 1; }
+[[ "$(readlink "$APPLICATIONS_LINK")" = /Applications ]] || { printf 'Destino de Aplicaciones incorrecto.\n' >&2; exit 1; }
 codesign --verify --deep --strict "$MOUNT/Mantis.app"
+RESOURCES="$MOUNT/Mantis.app/Contents/Resources"
+if [[ -f "$RESOURCES/English.json" ]]; then
+  [[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleDevelopmentRegion' "$MOUNT/Mantis.app/Contents/Info.plist")" = en ]] || { printf 'El idioma predeterminado debe ser inglés.\n' >&2; exit 1; }
+  for language in en es; do
+    plutil -lint "$RESOURCES/$language.lproj/Localizable.strings" "$RESOURCES/$language.lproj/InfoPlist.strings"
+  done
+  [[ "$(/usr/libexec/PlistBuddy -c 'Print :Ajustes' "$RESOURCES/en.lproj/Localizable.strings")" = Settings ]] || { printf 'Falta la traducción inglesa.\n' >&2; exit 1; }
+  printf 'Idiomas verificados: inglés (predeterminado) y español.\n'
+fi
 printf '\nMotor dentro del DMG: '
 "$MOUNT/Mantis.app/Contents/MacOS/MeetingRecorder" --engine-version
 printf 'Arquitecturas: '

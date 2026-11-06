@@ -37,7 +37,7 @@ struct SettingsView: View {
             }
             HStack(spacing: 8) {
                 ForEach(MantisSettingsPage.allCases) { item in
-                    Button { model.settingsPage = item } label: { Label(item.rawValue, systemImage: item.symbol).frame(maxWidth: .infinity) }
+                    Button { model.settingsPage = item } label: { Label(AppLocalization.text(item.rawValue), systemImage: item.symbol).frame(maxWidth: .infinity) }
                         .buttonStyle(MantisFilterStyle(selected: page == item))
                 }
             }
@@ -102,13 +102,13 @@ struct SettingsView: View {
                 Divider()
                 VStack(alignment: .leading, spacing: 12) {
                     Label("Ubicación de los textos", systemImage: "doc.text").font(.headline)
-                    Text(model.store?.textRoot.path ?? "No disponible").font(.callout.monospaced()).textSelection(.enabled)
+                    Text(model.store?.textRoot.path ?? AppLocalization.text("No disponible")).font(.callout.monospaced()).textSelection(.enabled)
                     Button("Cambiar carpeta") { chooseFolder(forText: true) }.disabled(model.busy || model.store == nil)
                 }
                 Divider()
                 VStack(alignment: .leading, spacing: 12) {
                     Label("Ubicación de los audios", systemImage: "waveform").font(.headline)
-                    Text(model.store?.root.path ?? "No disponible").font(.callout.monospaced()).textSelection(.enabled)
+                    Text(model.store?.root.path ?? AppLocalization.text("No disponible")).font(.callout.monospaced()).textSelection(.enabled)
                     Button("Cambiar carpeta") { chooseFolder(forText: false) }.disabled(model.busy || model.store == nil)
                 }
                 Text("Al cambiar una carpeta, se copian los archivos correspondientes y se conservan los originales. El historial interno puede contener texto aunque los TXT estén en otra carpeta; separarlos no es un límite de privacidad.")
@@ -116,7 +116,7 @@ struct SettingsView: View {
             }.mantisCard()
             Text("Si eliges iCloud o una carpeta sincronizada, ese proveedor puede subir sus archivos. Usa una carpeta local para mantenerlos solo en este Mac.")
                 .font(.caption).foregroundStyle(MantisTheme.secondary)
-            if let storageError { Text(storageError).font(.caption).foregroundStyle(MantisTheme.pink) }
+            if let storageError { Text(AppLocalization.message(storageError)).font(.caption).foregroundStyle(MantisTheme.pink) }
         }
     }
 
@@ -141,7 +141,7 @@ struct SettingsView: View {
     private func chooseFolder(forText: Bool) {
         storageError = nil
         let panel = NSOpenPanel()
-        panel.title = forText ? "Ubicación de los textos" : "Ubicación de los audios"
+        panel.title = AppLocalization.text(forText ? "Ubicación de los textos" : "Ubicación de los audios")
         panel.directoryURL = forText ? model.store?.textRoot : model.store?.root
         panel.canChooseDirectories = true
         panel.canChooseFiles = false

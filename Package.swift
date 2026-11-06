@@ -3,6 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "MeetingRecorder",
+    defaultLocalization: "en",
     platforms: [.macOS("15.0")],
     products: [
         .executable(name: "MeetingRecorder", targets: ["MeetingRecorder"]),
@@ -14,7 +15,7 @@ let package = Package(
             url: "https://github.com/handy-computer/transcribe.cpp/releases/download/v0.4.1/TranscribeCpp.xcframework.zip",
             checksum: "fb5646e564036a6c49659e3efcf72eb567af20da31b8569045c9a08181d35126"
         ),
-        .target(name: "MeetingCore", dependencies: ["CTranscribe"], linkerSettings: [
+        .target(name: "MeetingCore", dependencies: ["CTranscribe"], resources: [.copy("Resources")], linkerSettings: [
             .linkedLibrary("c++"), .linkedLibrary("z"),
             .linkedFramework("Accelerate"), .linkedFramework("Foundation"),
             .linkedFramework("Metal"), .linkedFramework("MetalKit")

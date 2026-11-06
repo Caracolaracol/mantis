@@ -46,7 +46,7 @@ struct ModelBrowserView: View {
                 Text("\(results.count) en catálogo").font(.caption).foregroundStyle(MantisTheme.secondary)
             }
             if let local = model.localModels.first(where: { $0.id == "default.gguf" }),
-               query.isEmpty || local.name.localizedStandardContains(query) {
+               query.isEmpty || local.name.localizedStandardContains(query) || AppLocalization.text(local.name).localizedStandardContains(query) {
                 HStack(spacing: 12) {
                     modelIcon("internaldrive", color: MantisTheme.pink)
                     VStack(alignment: .leading, spacing: 4) {
@@ -63,7 +63,7 @@ struct ModelBrowserView: View {
                     .font(.callout).foregroundStyle(MantisTheme.secondary).padding(.vertical, 12)
             }
             if let error = importError ?? model.modelDownloadError {
-                Label(error, systemImage: "exclamationmark.triangle").font(.caption).foregroundStyle(MantisTheme.pink)
+                Label(AppLocalization.message(error), systemImage: "exclamationmark.triangle").font(.caption).foregroundStyle(MantisTheme.pink)
             }
             HStack {
                 Label("Inferencia local · descargas de Hugging Face", systemImage: "lock.shield").font(.caption2)
@@ -75,7 +75,7 @@ struct ModelBrowserView: View {
             Button("Cancelar", role: .cancel) { pendingDownload = nil }
             Button("Descargar") { model.downloadModel(item); pendingDownload = nil }
         } message: { item in
-            Text("\(ByteCountFormatter.string(fromByteCount: item.byteCount, countStyle: .file)) desde \(item.repositoryURL.absoluteString).\nLicencia: \(item.license). Se verificará SHA-256. Puede requerir temporalmente el doble de espacio. Después podrás pulsar Usar para elegirlo.")
+            Text("\(AppLocalization.byteCount(item.byteCount)) desde \(item.repositoryURL.absoluteString).\nLicencia: \(item.license). Se verificará SHA-256. Puede requerir temporalmente el doble de espacio. Después podrás pulsar Usar para elegirlo.")
         }
     }
 
@@ -87,10 +87,10 @@ struct ModelBrowserView: View {
                 modelIcon(item.id.contains("whisper") ? "waveform" : "brain", color: MantisTheme.green)
                 VStack(alignment: .leading, spacing: 6) {
                     Text(item.name).font(.headline)
-                    Text(item.details).font(.caption).foregroundStyle(MantisTheme.secondary).fixedSize(horizontal: false, vertical: true)
+                    Text(AppLocalization.text(item.details)).font(.caption).foregroundStyle(MantisTheme.secondary).fixedSize(horizontal: false, vertical: true)
                     HStack(spacing: 8) {
-                        badge("Español")
-                        badge(ByteCountFormatter.string(fromByteCount: item.byteCount, countStyle: .file))
+                        badge(AppLocalization.text("Español"))
+                        badge(AppLocalization.byteCount(item.byteCount))
                         if installed { badge("Local", color: MantisTheme.green) }
                     }
                 }
@@ -104,13 +104,13 @@ struct ModelBrowserView: View {
             if downloading {
                 HStack(spacing: 10) {
                     ProgressView(value: model.modelDownloadProgress)
-                    Text(model.modelDownloadProgress >= 1 ? "Verificando…" : "\(Int(model.modelDownloadProgress * 100)) %")
+                    Text(model.modelDownloadProgress >= 1 ? AppLocalization.text("Verificando…") : "\(Int(model.modelDownloadProgress * 100)) %")
                         .font(.caption.monospacedDigit())
                     Button("Cancelar", action: model.cancelModelDownload)
                 }
             }
             HStack {
-                Text(item.license).font(.caption2).foregroundStyle(MantisTheme.secondary)
+                Text(AppLocalization.text(item.license)).font(.caption2).foregroundStyle(MantisTheme.secondary)
                 Spacer()
                 Link("Ficha del modelo ↗", destination: item.repositoryURL).font(.caption2)
             }
@@ -120,7 +120,7 @@ struct ModelBrowserView: View {
     }
 
     private func useButton(_ id: String) -> some View {
-        Button(selection == id ? "Elegido ✓" : "Usar") { selection = id }
+        Button(AppLocalization.text(selection == id ? "Elegido ✓" : "Usar")) { selection = id }
             .buttonStyle(.bordered).tint(selection == id ? MantisTheme.green : MantisTheme.pink)
             .disabled(model.busy || selection == id)
     }

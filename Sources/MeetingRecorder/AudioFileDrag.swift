@@ -1,4 +1,5 @@
 import AppKit
+import MeetingCore
 import SwiftUI
 
 enum AudioFileDragProvider {
@@ -24,7 +25,7 @@ struct AudioFileDragModifier: ViewModifier {
         content.overlay {
             NativeAudioFileDragSource(url: url, onSelect: onStart)
         }
-        .help("Haz clic para seleccionar o arrastra el archivo de audio a otra aplicación")
+        .help(AppLocalization.text("Haz clic para seleccionar o arrastra el archivo de audio a otra aplicación"))
     }
 }
 

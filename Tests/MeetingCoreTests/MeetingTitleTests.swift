@@ -5,7 +5,7 @@ final class MeetingTitleTests: XCTestCase {
     func testAutomaticTitleUsesCreationDateAndTimeZone() throws {
         let date = try XCTUnwrap(ISO8601DateFormatter().date(from: "2026-11-04T22:15:00Z"))
         let zone = try XCTUnwrap(TimeZone(secondsFromGMT: -3 * 3600))
-        XCTAssertEqual(Meeting.automaticTitle(for: date, timeZone: zone), "Reunión 04-11-2026 19:15")
+        XCTAssertEqual(Meeting.automaticTitle(for: date, timeZone: zone), "Recording 04-11-2026 19:15")
         let meeting = Meeting(mode: .systemAndMicrophone, audioFileName: "meeting.mov", createdAt: date)
         XCTAssertEqual(meeting.createdAt, date)
         XCTAssertEqual(meeting.title, Meeting.automaticTitle(for: meeting.createdAt))

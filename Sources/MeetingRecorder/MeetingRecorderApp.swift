@@ -9,6 +9,12 @@ struct MeetingRecorderLauncher {
     @MainActor static func main() {
         let arguments = Array(CommandLine.arguments.dropFirst())
         if arguments == ["--engine-version"] { print(NativeTranscriber.version); return }
+        if arguments.count == 4, arguments[0] == "--render-ui-preview", arguments[2] == "--language",
+           let language = AppLanguage(rawValue: arguments[3]) {
+            do { try UIPreviewRenderer.render(to: URL(fileURLWithPath: arguments[1], isDirectory: true), language: language) }
+            catch { fputs("Mantis preview: \(error.localizedDescription)\n", stderr) }
+            return
+        }
         do {
             let control = try RecorderControl()
             if arguments == ["--status"] {
@@ -51,13 +57,17 @@ struct MeetingRecorderApp: App {
         .defaultLaunchBehavior(startWithoutWindow ? .suppressed : .presented)
         .restorationBehavior(.disabled)
         .commands { MainWindowCommands() }
-        Settings { SettingsView().environmentObject(model) }
+        Settings {
+            SettingsView().environmentObject(model)
+                .environment(\.locale, model.language.locale)
+                .id(model.language)
+        }
             .restorationBehavior(.disabled)
     }
 }
 
 private struct MainWindowCommands: Commands {
-    static let title = "Mostrar biblioteca de Mantis"
+    static var title: String { AppLocalization.text("Mostrar biblioteca de Mantis") }
     @Environment(\.openWindow) private var openWindow
 
     var body: some Commands {
@@ -84,6 +94,8 @@ private struct MainWindowView: View {
             }
         }
         .mantisAppearance()
+        .environment(\.locale, model.language.locale)
+        .id(model.language)
         .background(WindowCloseGuard(busy: model.busy))
         .onAppear {
             delegate.reopenWindow = { openWindow(id: "main") }
@@ -167,9 +179,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         guard AppModel.shared.busy else { return .terminateNow }
         let alert = NSAlert()
-        alert.messageText = "Hay una operación en curso"
-        alert.informativeText = "Detén la grabación o cancela la transcripción o descarga de modelo antes de salir para guardar correctamente los archivos."
-        alert.addButton(withTitle: "Volver")
+        alert.messageText = AppLocalization.text("Hay una operación en curso")
+        alert.informativeText = AppLocalization.text("Detén la grabación o cancela la transcripción o descarga de modelo antes de salir para guardar correctamente los archivos.")
+        alert.addButton(withTitle: AppLocalization.text("Volver"))
         alert.runModal()
         return .terminateCancel
     }

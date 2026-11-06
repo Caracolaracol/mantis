@@ -3,6 +3,7 @@
 Sitio estático Astro de portada, documentación y licencia. Vive en este mismo repositorio, independiente de la app Swift.
 
 - URL de producción: `https://caracolaracol.github.io/mantis/`.
+- Inglés por defecto; español en `/mantis/es/`. Documentación: `/documentation/` y `/documentacion/`; licencia: `/license/` y `/licencia/`.
 - Node 22.23.4 o posterior; Astro fijado en `package.json` y lockfile.
 - `npm run build` sincroniza captura e icono desde los recursos del repositorio.
 - El caracol es el mismo recurso de la identidad personal usado en Raigambre.
@@ -30,6 +31,8 @@ Abre la ruta `/mantis/`, también durante el desarrollo. Los enlaces internos us
 Una textura SVG pequeña con `feTurbulence` se repite en una capa decorativa recortada al viewport. CSS mueve la capa en saltos mediante `transform` y `steps()`, sin recalcular el filtro sobre toda la pantalla en cada cuadro. El grano no captura clics ni se expone al lector de pantalla.
 
 Se detiene con `prefers-reduced-motion`, puede pausarse desde el pie y deja de animarse al ocultar la pestaña. No requiere canvas, fuentes remotas, analítica ni servicios externos.
+
+Un ataque SVG decorativo aparece por primera vez a los 16 segundos y luego a intervalos de 26–52 segundos. El brazo entra y se retira; una segunda capa deja una silueta que se desvanece durante los siguientes segundos. Está detrás del contenido, no captura eventos y se oculta con pausa, pestaña no visible o movimiento reducido. No requiere imágenes generadas ni dependencias de animación.
 
 Referencias técnicas: [MDN: feTurbulence](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTurbulence) y [técnica de textura con saltos CSS](https://webdevpuneet.com/ui-snippets/noise-background/). Implementación propia bajo la licencia MIT del repositorio.
 

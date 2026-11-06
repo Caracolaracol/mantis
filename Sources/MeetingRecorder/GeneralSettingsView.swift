@@ -33,12 +33,21 @@ final class LoginItemController: ObservableObject {
 }
 
 struct GeneralSettingsView: View {
+    @EnvironmentObject private var model: AppModel
     @AppStorage(LaunchPreferences.startInMenuBarKey) private var startInMenuBar = false
     @StateObject private var login = LoginItemController()
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 12) {
+                Label("Idioma", systemImage: "globe").font(.headline).foregroundStyle(MantisTheme.pink)
+                Picker("Idioma", selection: $model.language) {
+                    ForEach(AppLanguage.allCases) { language in Text(verbatim: language.name).tag(language) }
+                }.disabled(model.busy)
+                Text("Elige el idioma de Mantis. El inglés es el idioma predeterminado.")
+                    .font(.callout).foregroundStyle(MantisTheme.secondary)
+            }.mantisCard()
             VStack(alignment: .leading, spacing: 12) {
                 Label("Al abrir Mantis", systemImage: "menubar.rectangle").font(.headline).foregroundStyle(MantisTheme.pink)
                 Toggle("Iniciar en la barra de menús, sin abrir la ventana", isOn: $startInMenuBar)
@@ -58,7 +67,7 @@ struct GeneralSettingsView: View {
                     Text("macOS no encuentra esta app como ítem de inicio. Abre la copia instalada en Aplicaciones y vuelve a intentarlo.")
                         .font(.caption).foregroundStyle(MantisTheme.pink)
                 }
-                if let error = login.error { Text(error).font(.caption).foregroundStyle(MantisTheme.pink) }
+                if let error = login.error { Text(AppLocalization.message(error)).font(.caption).foregroundStyle(MantisTheme.pink) }
             }.mantisCard()
         }
         .onAppear { login.refresh() }

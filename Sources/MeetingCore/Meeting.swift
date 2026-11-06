@@ -11,26 +11,26 @@ public enum RecordingMode: String, Codable, CaseIterable, Identifiable, Sendable
 
     public var title: String {
         switch self {
-        case .systemAndMicrophone: return "Todo: computador + entrada"
-        case .systemAudio: return "Solo audio del computador"
-        case .microphone: return "Solo entrada de audio"
-        case .applicationOnly: return "Solo audio de la aplicación"
-        case .application: return "Aplicación + entrada de audio"
+        case .systemAndMicrophone: return AppLocalization.text("Todo: computador + entrada")
+        case .systemAudio: return AppLocalization.text("Solo audio del computador")
+        case .microphone: return AppLocalization.text("Solo entrada de audio")
+        case .applicationOnly: return AppLocalization.text("Solo audio de la aplicación")
+        case .application: return AppLocalization.text("Aplicación + entrada de audio")
         }
     }
 
     public var explanation: String {
         switch self {
         case .systemAndMicrophone:
-            return "Incluye lo que escuchas de todas las aplicaciones y la entrada elegida abajo (micrófono o interfaz). Usa auriculares para evitar eco."
+            return AppLocalization.text("Incluye lo que escuchas de todas las aplicaciones y la entrada elegida abajo (micrófono o interfaz). Usa auriculares para evitar eco.")
         case .systemAudio:
-            return "Incluye lo que reproducen todas las aplicaciones: llamada, música y notificaciones. No captura tu micrófono ni las entradas de tu interfaz."
+            return AppLocalization.text("Incluye lo que reproducen todas las aplicaciones: llamada, música y notificaciones. No captura tu micrófono ni las entradas de tu interfaz.")
         case .microphone:
-            return "Incluye únicamente el micrófono o los canales de la interfaz elegidos abajo. No captura lo que reproducen las aplicaciones."
+            return AppLocalization.text("Incluye únicamente el micrófono o los canales de la interfaz elegidos abajo. No captura lo que reproducen las aplicaciones.")
         case .applicationOnly:
-            return "Incluye lo que reproduce una aplicación. No captura tu entrada de audio; tu voz normalmente no estará incluida. Un navegador puede incluir varias pestañas."
+            return AppLocalization.text("Incluye lo que reproduce una aplicación. No captura tu entrada de audio; tu voz normalmente no estará incluida. Un navegador puede incluir varias pestañas.")
         case .application:
-            return "Incluye lo que reproduce una aplicación y la entrada elegida abajo. Usa auriculares para evitar eco. Un navegador puede incluir varias pestañas."
+            return AppLocalization.text("Incluye lo que reproduce una aplicación y la entrada elegida abajo. Usa auriculares para evitar eco. Un navegador puede incluir varias pestañas.")
         }
     }
 }
@@ -39,12 +39,12 @@ public enum MeetingStatus: String, Codable, Sendable {
     case recording, recorded, transcribing, completed, failed, interrupted
     public var title: String {
         switch self {
-        case .recording: return "Grabando"
-        case .recorded: return "Audio guardado"
-        case .transcribing: return "Transcribiendo"
-        case .completed: return "Lista"
-        case .failed: return "Error"
-        case .interrupted: return "Interrumpida"
+        case .recording: return AppLocalization.text("Grabando")
+        case .recorded: return AppLocalization.text("Audio guardado")
+        case .transcribing: return AppLocalization.text("Transcribiendo")
+        case .completed: return AppLocalization.text("Lista")
+        case .failed: return AppLocalization.text("Error")
+        case .interrupted: return AppLocalization.text("Interrumpida")
         }
     }
 }
@@ -81,20 +81,20 @@ public struct Meeting: Codable, Identifiable, Equatable, Sendable {
 
     public static func automaticTitle(for date: Date, timeZone: TimeZone = .current) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "es_CL")
+        formatter.locale = AppLocalization.language.locale
         formatter.calendar = Calendar(identifier: .gregorian)
         formatter.timeZone = timeZone
         formatter.dateFormat = "dd-MM-yyyy HH:mm"
-        return "Reunión \(formatter.string(from: date))"
+        return AppLocalization.format("Reunión %@", formatter.string(from: date))
     }
 
     public static func automaticFileStem(for date: Date, timeZone: TimeZone = .current) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "es_CL")
+        formatter.locale = AppLocalization.language.locale
         formatter.calendar = Calendar(identifier: .gregorian)
         formatter.timeZone = timeZone
         formatter.dateFormat = "yyyy-MM-dd HH-mm"
-        return "Reunión \(formatter.string(from: date))"
+        return AppLocalization.format("Reunión %@", formatter.string(from: date))
     }
 
     public mutating func rename(to title: String) throws {
@@ -107,6 +107,6 @@ public struct Meeting: Codable, Identifiable, Equatable, Sendable {
 public enum MeetingError: LocalizedError, Sendable {
     case message(String)
     public var errorDescription: String? {
-        switch self { case .message(let text): return text }
+        switch self { case .message(let text): return AppLocalization.message(text) }
     }
 }
