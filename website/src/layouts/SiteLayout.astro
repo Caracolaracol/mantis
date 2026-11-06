@@ -30,7 +30,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <title>{title}</title>
     <noscript><style>.grain::before { animation: none !important; }</style></noscript>
   </head>
-  <body>
+  <body class:list={{ 'home-page': section === 'home' }}>
     <a class="skip-link" href="#contenido">{t('Skip to content', 'Saltar al contenido')}</a>
     <div class="grain" aria-hidden="true" style={`--noise: url('${href('images/grain.svg')}')`}></div>
     <MantisAttack />
@@ -45,11 +45,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       <a class="snail-link" href={site.portfolio} target="_blank" rel="noopener noreferrer" aria-label={t('Visit Agustín Rojas’s portfolio (opens a new tab)', 'Visitar el portafolio de Agustín Rojas (abre otra pestaña)')} title={t('Made by Agustín Rojas', 'Hecho por Agustín Rojas')}><img src={href('images/caracol.png')} width="35" height="28" alt="" /></a>
     </header>
     <main id="contenido"><slot /></main>
-    <footer class="site-footer">
+    {section !== 'home' && <footer class="site-footer">
       <div><a class="footer-brand" href={localizedHref(language)}>Mantis<span aria-hidden="true">.</span></a><p>{t('An independent project by', 'Un proyecto independiente de')} <a href={site.portfolio}>Agustín Rojas</a>.</p></div>
       <div class="footer-links"><a href={site.repo}>{t('Source on GitHub', 'Código en GitHub')} ↗</a><a href={localizedHref(language, 'docs')}>{t('Documentation', 'Documentación')}</a><a href={localizedHref(language, 'license')}>{t('MIT license', 'Licencia MIT')}</a><button id="grain-toggle" type="button" aria-pressed="false" hidden>{t('Pause motion', 'Pausar movimiento')}</button></div>
       <p class="footer-note">{t('Audio only. Made to stay on your Mac.', 'Solo audio. Hecho para quedarse en tu Mac.')}<br />© 2026 Agustín Rojas · MIT</p>
-    </footer>
+    </footer>}
     <script>
       const button = document.querySelector<HTMLButtonElement>('#grain-toggle');
       const preference = window.matchMedia('(prefers-reduced-motion: reduce)');

@@ -56,7 +56,8 @@ test('download links and privacy/signing limitations are explicit', async () => 
   const home = await readFile(path.join(root, 'index.html'), 'utf8');
   const docs = await readFile(path.join(root, 'documentacion/index.html'), 'utf8');
   assert.match(home, /releases\/download\/v0\.3\.0\/Mantis-0\.3\.0\.dmg/);
-  assert.match(home, /not notarized/);
+  const englishDocs = await readFile(path.join(root, 'documentation/index.html'), 'utf8');
+  assert.match(englishDocs, /not notarized/);
   for (const text of ['ScreenCapture', 'local.agus.MeetingRecorder', 'FileVault', 'Gatekeeper', 'SketchyBar']) assert.ok(docs.includes(text));
 });
 
@@ -97,13 +98,35 @@ test('header and footer span viewport while content has a slightly wider cap', a
     const html = await readFile(path.join(root, file), 'utf8');
     assert.match(html, /<header class="site-header">/);
     assert.doesNotMatch(html, /<header class="site-header wrap"/);
-    assert.match(html, /<footer class="site-footer">/);
+    if (!['index.html', 'es/index.html'].includes(file)) assert.match(html, /<footer class="site-footer">/);
     assert.doesNotMatch(html, /<footer class="site-footer wrap"/);
   }
   const css = await readFile(new URL('../src/styles/global.css', import.meta.url), 'utf8');
   assert.match(css, /\.site-header \{ width: 100%; padding-inline: clamp\(/);
   assert.match(css, /\.site-footer \{ width: 100%; padding-inline: clamp\(/);
   assert.match(css, /\.wrap \{ width: min\(1280px, calc\(100% - 96px\)\)/);
+});
+
+test('home ends at the manifesto strip without lower sections or footer, keeping arms and pause', async () => {
+  for (const file of ['index.html', 'es/index.html']) {
+    const html = await readFile(path.join(root, file), 'utf8');
+    assert.match(html, /class="hero wrap"/);
+    assert.match(html, /class="manifesto-strip"/);
+    assert.match(html, /class="manifesto-strip"[\s\S]*?<\/main>/);
+    assert.doesNotMatch(html, /<footer|class="features|class="local-section|class="closing/);
+    assert.equal((html.match(/<section\b/g) || []).length, 1);
+    assert.equal((html.match(/id="grain-toggle"/g) || []).length, 1);
+    assert.match(html, /class="home-motion-toggle"/);
+    assert.match(html, /<body class="home-page">/);
+    assert.equal((html.match(/class="attack-arm"/g) || []).length, 2);
+  }
+});
+
+test('home strip rests at the viewport bottom without overlaying tall content', async () => {
+  const css = await readFile(new URL('../src/styles/global.css', import.meta.url), 'utf8');
+  assert.match(css, /\.home-page \{ min-height: 100svh; display: flex; flex-direction: column; \}/);
+  assert.match(css, /\.home-page main \{ flex: 1; display: flex; flex-direction: column; \}/);
+  assert.match(css, /\.home-page \.manifesto-strip \{ margin-top: auto; \}/);
 });
 
 test('first strike starts after five seconds and opposite side follows 300ms later', async () => {
