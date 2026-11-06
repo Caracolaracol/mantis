@@ -129,10 +129,10 @@ test('home strip rests at the viewport bottom without overlaying tall content', 
   assert.match(css, /\.home-page \.manifesto-strip \{ margin-top: auto; \}/);
 });
 
-test('first strike starts after five seconds and opposite side follows 300ms later', async () => {
+test('first strike starts after 3.5 seconds and opposite side follows 300ms later', async () => {
   const layout = await readFile(new URL('../src/layouts/SiteLayout.astro', import.meta.url), 'utf8');
   const css = await readFile(new URL('../src/styles/global.css', import.meta.url), 'utf8');
-  assert.match(layout, /first \? 5000 : 26000 \+ Math\.random\(\) \* 26000/);
+  assert.match(layout, /first \? 3500 : 26000 \+ Math\.random\(\) \* 26000/);
   assert.match(css, /\.attack-side-left \{ transform: scaleX\(-1\); --attack-delay: 300ms; \}/);
   assert.match(css, /mantis-strike 800ms .*var\(--attack-delay\) both/);
   assert.match(css, /mantis-afterimage 8s .*var\(--attack-delay\) both/);

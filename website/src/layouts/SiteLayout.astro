@@ -67,7 +67,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
           void attack.offsetWidth;
           attack.classList.add('is-attacking');
           scheduleAttack();
-        }, first ? 5000 : 26000 + Math.random() * 26000);
+        }, first ? 3500 : 26000 + Math.random() * 26000);
       }
       function update() {
         document.documentElement.dataset.grainPaused = String(paused || preference.matches);
