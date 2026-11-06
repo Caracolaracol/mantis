@@ -1,0 +1,38 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import Icon from '../components/Icon.astro';
+import { href, site } from '../lib/site';
+const features = [
+  { icon: 'audio' as const, number: '01', title: 'Escoge lo que escuchas.', text: 'El computador, tu micrófono o una aplicación. Juntos o por separado. Solo audio, nunca archivos de video.' },
+  { icon: 'folder' as const, number: '02', title: 'Una biblioteca. Tus archivos.', text: 'M4A con nombres de fecha y hora. Busca, escucha, abre en Finder o arrastra el audio a donde lo necesites.' },
+  { icon: 'local' as const, number: '03', title: 'El texto, si tú quieres.', text: 'Transcribe en tu Mac con modelos locales. O no: guardar solo el audio también está bien. Tú eliges cuándo y cómo.' },
+];
+---
+<SiteLayout title="Mantis — Tu audio, en tu Mac" description="Graba audio del computador, micrófono o una aplicación. Transcripción local opcional, archivos M4A y código abierto. Para macOS y Apple Silicon.">
+  <section class="hero wrap">
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="status-dot"></span> UNA PEQUEÑA APP PARA ESCUCHAR MEJOR</p>
+      <h1>Lo que escuchas,<br /><em>se queda<br class="desktop-break" /> contigo.</em></h1>
+      <p class="hero-description">Graba una conversación, una clase o una idea. Guarda el audio en tu Mac y, si quieres, conviértelo en texto. Sin cuentas. Sin mandar tus grabaciones a una nube.</p>
+      <div class="hero-actions"><a class="button primary" href={site.download}><Icon name="download" />Descargar para Mac<span class="button-arrow" aria-hidden="true">↗</span></a><a class="text-link" href={href('documentacion/')}>Conoce Mantis <span aria-hidden="true">→</span></a></div>
+      <p class="download-meta">v{site.version} · macOS 15+ · Apple Silicon <span>Gratis y de código abierto</span></p>
+      <div class="hero-footnote"><span class="tiny-mark" aria-hidden="true">✳</span><p>Sin prisa por transcribir.<br />El audio es tuyo desde el primer momento.</p></div>
+    </div>
+    <figure class="hero-screen">
+      <div class="screen-halo" aria-hidden="true"></div>
+      <div class="window-label"><span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>TU BIBLIOTECA, SIN VUELTAS</span><span aria-hidden="true">↗</span></div>
+      <a class="screen-link" href={href('images/library.png')} aria-label="Ver captura completa de la biblioteca de Mantis"><img src={href('images/library.png')} width="780" height="1000" alt="Biblioteca de Mantis con lista de grabaciones, búsqueda, botón Grabar audio y una transcripción de ejemplo" fetchpriority="high" /></a>
+      <figcaption><span class="status-dot"></span> Captura ilustrativa con grabaciones ficticias.</figcaption>
+    </figure>
+  </section>
+  <div class="manifesto-strip"><div class="wrap"><span>SOLO AUDIO</span><span aria-hidden="true">✳</span><span>PRIMERO LOCAL</span><span aria-hidden="true">✳</span><span>SIN CUENTAS</span><span aria-hidden="true">✳</span><span>MIT / CÓDIGO ABIERTO</span></div></div>
+  <section class="features wrap" aria-labelledby="features-title">
+    <div class="section-heading"><p class="eyebrow">MENOS INTERMEDIARIOS, MÁS TUYO</p><h2 id="features-title">Grabar debería<br />ser <em>así de simple.</em></h2><p>Mantis no es otro lugar al que subir tus cosas.<br />Es una herramienta para quedártelas.</p></div>
+    <div class="feature-grid">{features.map(feature => <article class="feature"><div class="feature-top"><Icon name={feature.icon} /><span>{feature.number}</span></div><h3>{feature.title}</h3><p>{feature.text}</p></article>)}</div>
+  </section>
+  <section class="local-section wrap" aria-labelledby="local-title">
+    <div class="local-graphic" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="orbit-label orbit-label-one">AUDIO</div><div class="orbit-label orbit-label-two">TEXTO</div><div class="local-core"><img src={href('images/mantis.svg')} width="88" height="88" alt="" /><span>EN TU MAC</span></div><div class="local-coordinate">MANTIS / LOCAL FIRST</div></div>
+    <div class="local-copy"><p class="eyebrow">AQUÍ, NO EN OTRO SERVIDOR</p><h2>Tu voz no necesita<br /><em>hacer un viaje.</em></h2><p>La transcripción funciona en tu equipo con <a href="https://github.com/handy-computer/transcribe.cpp">transcribe.cpp</a>. Descarga un modelo compatible cuando lo decidas; no hace falta ninguno para grabar.</p><p class="honest-note">Una nota importante: una carpeta sincronizada puede subir archivos a su proveedor. Y si arrastras un audio a un servicio externo, ese servicio puede recibirlo. Tú decides el destino.</p><a class="text-link" href={href('documentacion/#privacidad')}>Cómo cuidamos tus datos <Icon name="arrow" /></a></div>
+  </section>
+  <section class="closing wrap"><p class="eyebrow">UN LUGAR PARA LO QUE NO QUIERES PERDER</p><h2>Abre Mantis.<br /><em>El resto puede esperar.</em></h2><a class="button primary" href={site.download}><Icon name="download" />Descargar Mantis <span aria-hidden="true">↗</span></a><p>macOS 15+ · Apple Silicon · Licencia MIT</p><div class="release-notice">Versión experimental con firma local, sin notarización de Apple.<br /><a href={href('documentacion/#instalacion')}>Lee cómo instalar y autorizar la app</a> antes de tu primera grabación.</div></section>
+</SiteLayout>

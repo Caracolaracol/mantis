@@ -1,0 +1,13 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { site } from '../lib/site';
+import license from '../../../LICENSE?raw';
+---
+<SiteLayout title="Licencia y créditos — Mantis" description="Mantis es código abierto bajo licencia MIT. Consulta la licencia completa y los créditos de transcribe.cpp y sus dependencias." section="license">
+  <div class="page-heading wrap"><p class="eyebrow">EL CÓDIGO TAMBIÉN ES PARA COMPARTIR</p><h1>Abierto.<br /><em>Por elección.</em></h1><p>Usa, estudia, modifica y comparte Mantis. La licencia es MIT.</p></div>
+  <article class="license-content wrap prose">
+    <section><h2>Lo que puedes hacer.</h2><p>El código propio de Mantis puede usarse, copiarse, modificarse y redistribuirse, incluso con fines comerciales, conservando el aviso de autoría y el texto de la licencia. Se entrega sin garantías. El siguiente texto es la licencia completa, no un resumen legal.</p><pre class="license-text"><code>{license}</code></pre><a href={`${site.repo}/blob/main/LICENSE`}>Ver LICENSE en GitHub ↗</a></section>
+    <section><h2>No se construye en solitario.</h2><p>Mantis utiliza <a href="https://github.com/handy-computer/transcribe.cpp">transcribe.cpp</a>, del proyecto <a href="https://github.com/handy-computer">handy-computer</a>, para la transcripción local. Gracias a sus autores y a las comunidades de <strong>ggml, Silero VAD y miniz</strong>.</p><p>Los avisos y licencias correspondientes se conservan en <a href={`${site.repo}/tree/main/Resources/ThirdParty`}>Resources/ThirdParty</a>. Los modelos de transcripción pertenecen a sus respectivos autores y mantienen sus propias licencias; sus pesos no se redistribuyen en el instalador.</p><p>Mantis es independiente. No requiere tener Handy instalado ni implica afiliación o respaldo por parte de Handy.</p></section>
+    <section class="author-card"><img src="../images/caracol.png" width="92" height="73" alt="Caracol, marca personal de Agustín Rojas" /><div><p class="eyebrow">DETRÁS DE MANTIS</p><h2>Agustín Rojas</h2><a href={site.portfolio} target="_blank" rel="noopener noreferrer">Pasa a ver mis otros proyectos ↗</a></div></section>
+  </article>
+</SiteLayout>

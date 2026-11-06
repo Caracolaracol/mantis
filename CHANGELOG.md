@@ -2,6 +2,9 @@
 
 ## Sin publicar
 
+- Sitio Astro en `website/`, publicado en GitHub Pages: portada, documentación, licencia y descarga del DMG.
+- Paleta verde/rosa de Mantis, textura de grano animada con pausa y soporte de movimiento reducido, y caracol del autor enlazado a su portafolio.
+
 - Widget reutilizable para SketchyBar en `integrations/sketchybar/mantis.sh`, con guía en README.
 - Plugin configurable con detección de SketchyBar y ruta predeterminada de la app instalada.
 - 11 pruebas de integración en dry-run; no requieren iniciar grabaciones ni modificar la barra.

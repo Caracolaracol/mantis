@@ -15,7 +15,7 @@
 
 Mantis graba el sonido del computador, un micrófono o una aplicación específica. Guarda archivos **M4A**, organiza una biblioteca local y permite transcribir con modelos que se ejecutan en tu Mac. No requiere cuenta, backend, Handy ni FFmpeg.
 
-**[Descargar DMG para Apple Silicon](https://github.com/Caracolaracol/mantis/releases/latest/download/Mantis-0.2.2.dmg)** · **[Releases y checksum](https://github.com/Caracolaracol/mantis/releases/latest)**
+**[Sitio de Mantis](https://caracolaracol.github.io/mantis/)** · **[Descargar DMG para Apple Silicon](https://github.com/Caracolaracol/mantis/releases/latest/download/Mantis-0.2.2.dmg)** · **[Releases y checksum](https://github.com/Caracolaracol/mantis/releases/latest)**
 
 <p align="center">
   <img src="docs/images/library.png" width="650" alt="Biblioteca de Mantis con búsqueda, grabaciones y transcripción">
@@ -201,6 +201,25 @@ Las descargas usan revisiones fijas, tamaño esperado y SHA-256. **Descargar no 
 El identificador `local.agus.MeetingRecorder` y las rutas internas `MeetingRecorder` se mantienen por compatibilidad de datos y permisos.
 
 ## Desarrollo y pruebas
+
+### Sitio web
+
+El sitio estático vive en [`website/`](website/README.md), en este mismo repositorio: portada, documentación, licencia MIT y enlace al instalador. Usa Astro, la paleta de Mantis y grano animado con pausa y respeto por movimiento reducido. El botón del caracol enlaza al portafolio del autor.
+
+```bash
+cd website
+npm ci
+npm run dev
+# Para validar la publicación:
+npm run build
+npm test
+```
+
+Requiere Node 22.23.4 o posterior; también incluye un runtime local de desarrollo. Abre `/mantis/`. El workflow `.github/workflows/website.yml` publica en [GitHub Pages](https://caracolaracol.github.io/mantis/) al actualizar `main`; no modifica el ejecutable ni el DMG.
+
+### Aplicación
+
+Desde la raíz del repositorio:
 
 ```bash
 swift test --disable-automatic-resolution

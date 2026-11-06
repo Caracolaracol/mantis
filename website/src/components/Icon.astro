@@ -1,0 +1,13 @@
+---
+interface Props { name: 'arrow' | 'download' | 'audio' | 'folder' | 'local' | 'code'; }
+const { name } = Astro.props;
+const paths = {
+  arrow: 'M7 17 17 7M7 7h10v10',
+  download: 'M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5',
+  audio: 'M4 10v4m4-8v12m4-15v18m4-15v12m4-8v4',
+  folder: 'M3 7h7l2 3h9v10H3zM3 7V4h7l2 3h9v3',
+  local: 'M12 3 4 7v5c0 5 8 9 8 9s8-4 8-9V7zM8 12l3 3 5-6',
+  code: 'm8 7-5 5 5 5m8-10 5 5-5 5m-3-14-2 20',
+};
+---
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={paths[name]} /></svg>

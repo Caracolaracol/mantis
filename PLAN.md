@@ -34,6 +34,14 @@
 - [ ] Validar descargas reales de cada modelo, cancelación y selección.
 - [ ] Validar copia de bibliotecas anteriores con datos de prueba y copia de seguridad.
 
+## Sitio de la aplicación
+
+- [x] Astro estático en `website/`, sin backend ni servicios de analítica.
+- [x] Portada con captura sintética, documentación, licencia MIT, descarga y enlace al autor con su caracol.
+- [x] Paleta verde bosque/rosa claro y grano SVG animado mediante CSS, con pausa, pestaña oculta y movimiento reducido.
+- [x] Cinco pruebas de estructura, recursos, enlaces, licencia y límites; navegador revisado en 375/768/1440 px.
+- [x] Workflow GitHub Pages con lockfile, acciones fijadas a commit y permisos de despliegue limitados.
+
 ## Próximas mejoras
 
 - [ ] Identidad de firma estable, Developer ID y notarización.

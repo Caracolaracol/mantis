@@ -25,3 +25,10 @@ recordings/
 *.pfx
 *.key
 *.pem
+
+# Astro website
+website/node_modules/
+website/dist/
+website/.astro/
+website/public/images/library.png
+website/public/images/mantis.svg

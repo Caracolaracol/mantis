@@ -1,0 +1,69 @@
+---
+import '../styles/global.css';
+import { href, site } from '../lib/site';
+interface Props { title: string; description: string; section?: string; }
+const { title, description, section = 'home' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#12231d" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(href('images/library.png'), Astro.site)} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={href('images/mantis.svg')} />
+    <title>{title}</title>
+    <noscript><style>.grain::before { animation: none !important; }</style></noscript>
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <div class="grain" aria-hidden="true" style={`--noise: url('${href('images/grain.svg')}')`}></div>
+    <header class="site-header wrap">
+      <a class="brand" href={href()} aria-label="Mantis, inicio"><img src={href('images/mantis.svg')} width="40" height="40" alt="" /><span>Mantis<span class="brand-caption">PARA MACOS</span></span></a>
+      <nav aria-label="Principal">
+        <a href={href('documentacion/')} aria-current={section === 'docs' ? 'page' : undefined}>Documentación</a>
+        <a href={href('licencia/')} aria-current={section === 'license' ? 'page' : undefined}>Licencia</a>
+        <a class="nav-github" href={site.repo}>GitHub <span aria-hidden="true">↗</span></a>
+      </nav>
+      <a class="snail-link" href={site.portfolio} target="_blank" rel="noopener noreferrer" aria-label="Visitar el portafolio de Agustín Rojas (abre otra pestaña)" title="Hecho por Agustín Rojas"><img src={href('images/caracol.png')} width="60" height="48" alt="" /></a>
+    </header>
+    <main id="contenido"><slot /></main>
+    <footer class="site-footer wrap">
+      <div><a class="footer-brand" href={href()}>Mantis<span aria-hidden="true">.</span></a><p>Un proyecto independiente de <a href={site.portfolio}>Agustín Rojas</a>.</p></div>
+      <div class="footer-links"><a href={site.repo}>Código en GitHub ↗</a><a href={href('documentacion/')}>Documentación</a><a href={href('licencia/')}>Licencia MIT</a><button id="grain-toggle" type="button" aria-pressed="false" hidden>Pausar textura</button></div>
+      <p class="footer-note">Solo audio. Hecho para quedarse en tu Mac.<br />© 2026 Agustín Rojas · MIT</p>
+    </footer>
+    <script>
+      const button = document.querySelector<HTMLButtonElement>('#grain-toggle');
+      const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
+      let paused = preference.matches;
+      try { paused = preference.matches || localStorage.getItem('mantis-grain-paused') === 'true'; } catch { /* Storage is optional. */ }
+      function update() {
+        document.documentElement.dataset.grainPaused = String(paused || preference.matches);
+        if (button) {
+          button.hidden = false;
+          button.disabled = preference.matches;
+          button.setAttribute('aria-pressed', String(paused || preference.matches));
+          button.textContent = preference.matches ? 'Movimiento reducido' : paused ? 'Animar textura' : 'Pausar textura';
+        }
+      }
+      button?.addEventListener('click', () => {
+        paused = !paused;
+        try { localStorage.setItem('mantis-grain-paused', String(paused)); } catch { /* No storage needed. */ }
+        update();
+      });
+      preference.addEventListener('change', update);
+      document.addEventListener('visibilitychange', () => { document.documentElement.dataset.pageHidden = String(document.hidden); });
+      update();
+    </script>
+  </body>
+</html>
