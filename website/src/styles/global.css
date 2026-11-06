@@ -62,10 +62,10 @@ h1, h2, h3, p { margin-top: 0; }
 .attack-side-left { transform: scaleX(-1); --attack-delay: 300ms; }
 .mantis-attack svg { position: absolute; width: min(1250px, 115vw); height: 115vh; right: -15vw; bottom: -27vh; opacity: 0; overflow: visible; transform-origin: 90% 85%; }
 .attack-arm { filter: blur(1.5px); }
-.arm-body { fill: #e8cfd4; }
-.arm-tibia { fill: #f4e0e5; }
-.arm-spine { fill: #ffeef2; }
-.arm-joint { fill: #c39ca7; }
+.arm-body { fill: #7aa66a; }
+.arm-tibia { fill: #a0c786; }
+.arm-spine { fill: #c0dca5; }
+.arm-joint { fill: #628c55; }
 .attack-arm *, .attack-trace * { stroke: none; }
 .attack-trace { fill: #07140e; filter: blur(2.5px); transform: translate(-3%, -3%) rotate(-8deg); }
 .is-attacking .attack-arm { animation: mantis-strike 800ms linear var(--attack-delay) both; }
