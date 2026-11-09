@@ -97,6 +97,10 @@ em { color: var(--pink); font-weight: 400; }
 .text-link { display: inline-flex; align-items: center; gap: 12px; color: var(--pink); font-size: 13px; text-decoration: none; padding-block: 8px; }
 .download-meta { font-size: 10px; color: var(--muted); margin-top: 15px; line-height: 1.8; }
 .download-meta span { display: block; }
+.sonoma-download { margin-top: 16px; }
+.sonoma-download .text-link { min-height: 44px; font-size: 12px; }
+.sonoma-download p { color: var(--muted); font-size: 10px; line-height: 1.8; margin: 0; }
+.sonoma-download strong { color: var(--pink); font-weight: 500; }
 .hero-footnote { display: flex; align-items: center; gap: 14px; padding-top: 27px; margin-top: 35px; border-top: 1px solid var(--border); max-width: 300px; }
 .tiny-mark { font-size: 35px; color: var(--green); }
 .hero-footnote p { color: var(--muted); font-size: 11px; line-height: 1.7; margin: 0; }

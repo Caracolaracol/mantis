@@ -11,8 +11,12 @@ const screenshot = href(language === 'es' ? 'images/library-es.png' : 'images/li
     <div class="hero-copy">
       <h1>{t('What you hear,', 'Lo que escuchas,')}<br /><em>{t('Mantis records.', 'Mantis lo graba.')}</em></h1>
       <p class="hero-description">{t('Record a conversation, a class, or an idea. Save the audio on your Mac and, if you want, turn it into text. No account needed.', 'Graba una conversación, una clase o una idea. Guarda el audio en tu Mac y, si quieres, conviértelo en texto. Sin cuentas.')}</p>
-      <div class="hero-actions"><a class="button primary" href={site.download}><Icon name="download" />{t('Download for Mac', 'Descargar para Mac')}<span class="button-arrow" aria-hidden="true">↗</span></a><a class="text-link" href={localizedHref(language, 'docs')}>{t('Meet Mantis', 'Conoce Mantis')} <span aria-hidden="true">→</span></a></div>
+      <div class="hero-actions"><a class="button primary" href={site.download}><Icon name="download" />{t('Download for macOS 15+', 'Descargar para macOS 15+')}<span class="button-arrow" aria-hidden="true">↗</span></a><a class="text-link" href={localizedHref(language, 'docs')}>{t('Meet Mantis', 'Conoce Mantis')} <span aria-hidden="true">→</span></a></div>
       <p class="download-meta">v{site.version} · macOS 15+ · Apple Silicon <span>{t('Free and open source', 'Gratis y de código abierto')}</span></p>
+      <div class="sonoma-download">
+        <a class="text-link" href={site.sonomaDownload}><Icon name="download" />{t('Download for macOS 14 Sonoma', 'Descargar para macOS 14 Sonoma')}</a>
+        <p>v{site.sonomaVersion} · Apple Silicon · <strong>{t('Test release', 'Versión de prueba')}</strong> · <a href={`${localizedHref(language, 'docs')}#sonoma`}>{t('Details', 'Detalles')}</a></p>
+      </div>
       <button class="home-motion-toggle" id="grain-toggle" type="button" aria-pressed="false" hidden>{t('Pause motion', 'Pausar movimiento')}</button>
       <div class="hero-footnote"><span class="tiny-mark" aria-hidden="true">✳</span><p>{t('No rush to transcribe.', 'Sin prisa por transcribir.')}<br />{t('The audio is yours from the start.', 'El audio es tuyo desde el primer momento.')}</p></div>
     </div>

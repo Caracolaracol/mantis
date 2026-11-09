@@ -82,6 +82,20 @@ test('home defaults to English and updated copy is present in both languages', a
   }
 });
 
+test('home offers separate standard and Sonoma downloads with clear requirements', async () => {
+  for (const file of ['index.html', 'es/index.html']) {
+    const html = await readFile(path.join(root, file), 'utf8');
+    assert.match(html, /releases\/download\/v0\.4\.0\/Mantis-0\.4\.0\.dmg/);
+    assert.match(html, /class="sonoma-download"/);
+    assert.match(html, /releases\/download\/v0\.4\.1-sonoma\/Mantis-0\.4\.1-macOS14\.dmg/);
+    assert.match(html, /macOS 15\+/);
+    assert.match(html, /macOS 14 Sonoma/);
+    assert.match(html, /Apple Silicon/);
+    assert.match(html, /Test release|Versión de prueba/);
+    assert.match(html, /#sonoma/);
+  }
+});
+
 test('occasional attack and fading silhouette are decorative and can be disabled', async () => {
   const html = await readFile(path.join(root, 'index.html'), 'utf8');
   const css = await readFile(new URL('../src/styles/global.css', import.meta.url), 'utf8');
