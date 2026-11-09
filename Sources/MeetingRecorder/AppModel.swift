@@ -52,6 +52,7 @@ final class AppModel: ObservableObject {
 
     @Published private(set) var store: MeetingStore?
     let models: ModelStore?
+    let updates: AppUpdateController
     private let recorder = RecordingService()
     private let normalizer = AudioNormalizer()
     private let transcriber = NativeTranscriber()
@@ -69,6 +70,7 @@ final class AppModel: ObservableObject {
     }
 
     init(preview: Bool = false) {
+        updates = preview ? AppUpdateController(persists: false, fetch: { nil }) : AppUpdateController()
         if preview {
             isPreview = true
             models = nil
@@ -103,6 +105,11 @@ final class AppModel: ObservableObject {
         if systemAudioPermissionResetState == .requiresRestart {
             permissionSnapshot = CaptureAuthorizationSnapshot(microphone: permissionSnapshot.microphone, systemAudio: .unverified)
         }
+    }
+
+    func checkForUpdatesAutomatically() {
+        guard !isPreview, !showingOnboarding, !busy, updates.automaticChecks else { return }
+        Task { await updates.check(automatically: true, isBusy: busy) }
     }
 
     func refreshAudioInputs() {

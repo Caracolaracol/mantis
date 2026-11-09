@@ -55,9 +55,13 @@ test('MIT license page contains complete repository license and upstream credit'
 test('download links and privacy/signing limitations are explicit', async () => {
   const home = await readFile(path.join(root, 'index.html'), 'utf8');
   const docs = await readFile(path.join(root, 'documentacion/index.html'), 'utf8');
-  assert.match(home, /releases\/download\/v0\.3\.0\/Mantis-0\.3\.0\.dmg/);
+  assert.match(home, /releases\/download\/v0\.4\.0\/Mantis-0\.4\.0\.dmg/);
   const englishDocs = await readFile(path.join(root, 'documentation/index.html'), 'utf8');
   assert.match(englishDocs, /not notarized/);
+  assert.match(englishDocs, /id="actualizaciones"/);
+  assert.match(englishDocs, /off by default/);
+  assert.match(docs, /id="actualizaciones"/);
+  assert.match(docs, /tu dirección IP/);
   for (const text of ['ScreenCapture', 'local.agus.MeetingRecorder', 'FileVault', 'Gatekeeper', 'SketchyBar']) assert.ok(docs.includes(text));
 });
 

@@ -9,13 +9,13 @@
 <p align="center">
   <img src="https://img.shields.io/badge/macOS-15%2B-black" alt="macOS 15 o posterior">
   <img src="https://img.shields.io/badge/plataforma-Apple%20Silicon-green" alt="Apple Silicon">
-  <img src="https://img.shields.io/badge/versión-0.3.0-pink" alt="Versión 0.3.0">
+  <img src="https://img.shields.io/badge/versión-0.4.0-pink" alt="Versión 0.4.0">
   <a href="LICENSE"><img src="https://img.shields.io/badge/licencia-MIT-blue" alt="Licencia MIT"></a>
 </p>
 
 Mantis graba el sonido del computador, un micrófono o una aplicación específica. Guarda archivos **M4A**, organiza una biblioteca local y permite transcribir con modelos que se ejecutan en tu Mac. No requiere cuenta, backend, Handy ni FFmpeg.
 
-**[Sitio de Mantis](https://caracolaracol.github.io/mantis/)** · **[Sitio en español](https://caracolaracol.github.io/mantis/es/)** · **[Descargar DMG para Apple Silicon](https://github.com/Caracolaracol/mantis/releases/download/v0.3.0/Mantis-0.3.0.dmg)** · **[Releases y checksum](https://github.com/Caracolaracol/mantis/releases/latest)**
+**[Sitio de Mantis](https://caracolaracol.github.io/mantis/)** · **[Sitio en español](https://caracolaracol.github.io/mantis/es/)** · **[Descargar DMG para Apple Silicon](https://github.com/Caracolaracol/mantis/releases/download/v0.4.0/Mantis-0.4.0.dmg)** · **[Releases y checksum](https://github.com/Caracolaracol/mantis/releases/latest)**
 
 <p align="center">
   <img src="docs/images/library.png" width="650" alt="Biblioteca de Mantis con búsqueda, grabaciones y transcripción">
@@ -40,6 +40,15 @@ Mantis graba el sonido del computador, un micrófono o una aplicación específi
 La transcripción automática está **desactivada por defecto**. Puedes usar Mantis solo para grabar, sin descargar ningún modelo.
 
 La app y el sitio están disponibles en **inglés y español**, con **inglés por defecto**. Elige el idioma en la bienvenida o en **Settings → General → Language / Ajustes → General → Idioma**. La elección se conserva; no traduce ni modifica títulos, transcripciones o archivos existentes. Los diálogos propios de macOS pueden seguir el idioma del sistema.
+
+### Avisos de nuevas versiones
+
+- **Mantis → Check for updates… / Buscar actualizaciones…**, el menú de la barra y **Settings → General / Ajustes → General** permiten consultar la última Release estable de GitHub.
+- La revisión automática está **desactivada por defecto**. Puedes activarla en General: comprueba al abrir y durante el reposo, como máximo una vez cada 24 horas. Los intentos fallidos también cuentan para ese límite; la búsqueda manual lo omite.
+- Si existe una versión mayor, aparece un aviso bilingüe con **Ver novedades**, **Descargar actualización…**, **Más tarde** y **Omitir esta versión**. Las dos primeras acciones abren la página oficial de la Release en el navegador; la descarga del DMG y la instalación son manuales. Una flecha en la barra indica el aviso pendiente cuando la app está en reposo; al pulsarla abre Mantis, no empieza a grabar. El clic derecho mantiene la acción explícita para grabar.
+- Durante grabación, preparación, permisos, descarga de modelos o transcripción, las búsquedas están bloqueadas y el aviso se oculta. No se cierran ventanas, interrumpen operaciones, reemplazan apps ni restablecen permisos.
+- Solo se consulta `https://api.github.com/repos/Caracolaracol/mantis/releases/latest`, sin cuenta, token, cookies, audios ni textos. GitHub recibe la solicitud y la dirección IP. Se usan HTTPS, límites de tamaño/tiempo y enlaces oficiales construidos localmente; no se siguen destinos arbitrarios entregados por el servidor.
+- **Quienes usen 0.3.0 deben instalar 0.4.0 manualmente una vez** para recibir estos avisos futuros. No es un actualizador automático ni usa Sparkle.
 
 ## Requisitos
 
@@ -78,10 +87,10 @@ open build/Mantis.app
 
 ```bash
 ./scripts/build-dmg.sh
-./scripts/verify-dmg.sh build/Mantis-0.3.0.dmg
+./scripts/verify-dmg.sh build/Mantis-0.4.0.dmg
 ```
 
-Se generan `build/Mantis-0.3.0.dmg` y su archivo `.sha256`. El DMG contiene Mantis y un acceso **Applications** hacia la carpeta Aplicaciones:
+Se generan `build/Mantis-0.4.0.dmg` y su archivo `.sha256`. El DMG contiene Mantis y un acceso **Applications** hacia la carpeta Aplicaciones:
 
 1. Sal de cualquier versión de Mantis abierta; cerrar su ventana no termina la app.
 2. Abre el DMG y arrastra **Mantis.app** a **Aplicaciones**.
@@ -195,7 +204,7 @@ Las descargas usan revisiones fijas, tamaño esperado y SHA-256. **Descargar no 
 
 - Audio y TXT comparten carpeta y nombre por defecto. Cambiar una ubicación copia los archivos correspondientes y conserva originales; no sobrescribe archivos diferentes.
 - El audio final es AAC mono. Los MOV internos son temporales de solo audio y se conservan ante fallos hasta completar la conversión y persistencia.
-- No hay cuenta, backend ni subida de grabaciones o transcripciones desde Mantis. Descargar modelos contacta Hugging Face y su CDN.
+- No hay cuenta, backend ni subida de grabaciones o transcripciones desde Mantis. Descargar modelos contacta Hugging Face y su CDN. Buscar actualizaciones contacta GitHub únicamente por petición manual o si activas la revisión automática opcional.
 - Una carpeta sincronizada puede enviar datos a su proveedor. El historial interno también puede contener texto aunque separes los TXT.
 - No hay cifrado adicional al disco; considera FileVault y copias de seguridad.
 - Avisa a los participantes y cumple las obligaciones de consentimiento antes de grabar.

@@ -2,8 +2,12 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$ROOT/build/Mantis.app/Contents/Info.plist")"
-IMAGE="${1:-$ROOT/build/Mantis-$VERSION.dmg}"
+if [[ $# -gt 0 ]]; then
+  IMAGE="$1"
+else
+  VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$ROOT/build/Mantis.app/Contents/Info.plist")"
+  IMAGE="$ROOT/build/Mantis-$VERSION.dmg"
+fi
 [[ -f "$IMAGE" ]] || { printf 'No existe el DMG: %s\n' "$IMAGE" >&2; exit 1; }
 TEMP_ROOT="${MANTIS_PACKAGE_TEMP:-${TMPDIR:-/private/tmp}/opencode}"
 mkdir -p "$TEMP_ROOT"

@@ -1,10 +1,10 @@
 export const site = {
   name: 'Mantis',
-  version: '0.3.0',
+  version: '0.4.0',
   repo: 'https://github.com/Caracolaracol/mantis',
   release: 'https://github.com/Caracolaracol/mantis/releases/latest',
-  download: 'https://github.com/Caracolaracol/mantis/releases/download/v0.3.0/Mantis-0.3.0.dmg',
-  checksum: 'https://github.com/Caracolaracol/mantis/releases/download/v0.3.0/Mantis-0.3.0.dmg.sha256',
+  download: 'https://github.com/Caracolaracol/mantis/releases/download/v0.4.0/Mantis-0.4.0.dmg',
+  checksum: 'https://github.com/Caracolaracol/mantis/releases/download/v0.4.0/Mantis-0.4.0.dmg.sha256',
   portfolio: 'https://agustinrojasm.vercel.app',
 };
 

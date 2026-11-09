@@ -20,6 +20,7 @@ struct ContentView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 header
+                AppUpdateNotice(updates: model.updates, isBusy: model.busy)
                 recordingCard.mantisCard()
                 if model.modelDownloadID != nil {
                     HStack {

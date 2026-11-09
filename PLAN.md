@@ -1,6 +1,6 @@
 # Mantis — estado y próximos pasos
 
-## Implementado en 0.3.0
+## Implementado en 0.4.0
 
 - [x] App nativa macOS 15+ con SwiftUI/AppKit y barra de menús.
 - [x] Cinco modos de captura de solo audio y selección de entrada/canales.
@@ -17,10 +17,11 @@
 - [x] Scripts de bundle, firma local, DMG y verificación de solo lectura.
 - [x] Inglés y español en bienvenida, ajustes, biblioteca, modelos, mensajes y barra de menús; inglés por defecto y selección persistente.
 - [x] Tablas nativas EN/ES generadas desde un catálogo compartido, sin traducir datos del usuario.
+- [x] Avisos de nuevas Releases estables, búsqueda manual y revisión automática opcional (apagada por defecto, un intento por día), sin instalar ni interrumpir grabaciones.
 
 ## Validación automatizada
 
-- [x] 87 pruebas Swift con integraciones locales, localización y vistas sintéticas.
+- [x] 103 pruebas Swift con integraciones locales, localización, avisos de versiones y vistas sintéticas.
 - [x] 12 pruebas Python de SketchyBar en modo dry-run, incluidos idioma, registro del widget y rutas con espacios/comillas.
 - [x] Las pruebas de recuperación de permisos usan un ejecutor falso: no ejecutan `tccutil` real.
 - [x] Las pruebas de inicio de sesión usan un servicio falso: no registran la app al login.
@@ -43,7 +44,7 @@
 - [x] Paleta verde bosque/rosa claro y grano SVG animado mediante CSS, con pausa, pestaña oculta y movimiento reducido.
 - [x] Inglés por defecto, español y páginas equivalentes enlazadas con selector EN/ES y hreflang.
 - [x] Cabeza de mantis sin recuadro como logo, caracol menor y ataque SVG ocasional con silueta que desaparece.
-- [x] Siete pruebas de estructura, idiomas, recursos, enlaces, licencia y efectos; seis páginas revisadas en 375/768/1440 px.
+- [x] Doce pruebas de estructura, idiomas, recursos, enlaces, licencia y efectos; seis páginas revisadas en 375/768/1440 px.
 - [x] Workflow GitHub Pages con lockfile, acciones fijadas a commit y permisos de despliegue limitados.
 
 ## Próximas mejoras

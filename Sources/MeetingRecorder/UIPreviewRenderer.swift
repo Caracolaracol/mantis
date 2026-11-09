@@ -21,6 +21,9 @@ enum UIPreviewRenderer {
         try capture(ContentView(model: model).environment(\.locale, language.locale), size: NSSize(width: 780, height: 1000), to: directory.appendingPathComponent("library-\(language.rawValue).png"))
         try capture(SettingsView().environmentObject(model).environment(\.locale, language.locale), size: NSSize(width: 810, height: 700), to: directory.appendingPathComponent("settings-\(language.rawValue).png"))
         try capture(OnboardingView(model: model, initialStep: 3).environment(\.locale, language.locale), size: NSSize(width: 760, height: 720), to: directory.appendingPathComponent("models-\(language.rawValue).png"))
+        let updates = AppUpdateController.preview(release: AppRelease(tag: "v0.4.0")!)
+        try capture(AppUpdateNotice(updates: updates, isBusy: false).padding(24).mantisAppearance().environment(\.locale, language.locale),
+                    size: NSSize(width: 700, height: 260), to: directory.appendingPathComponent("update-\(language.rawValue).png"))
     }
 
     private static func capture<V: View>(_ view: V, size: NSSize, to url: URL) throws {

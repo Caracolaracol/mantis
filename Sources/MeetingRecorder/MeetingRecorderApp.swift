@@ -56,7 +56,7 @@ struct MeetingRecorderApp: App {
         .defaultSize(width: 780, height: 820)
         .defaultLaunchBehavior(startWithoutWindow ? .suppressed : .presented)
         .restorationBehavior(.disabled)
-        .commands { MainWindowCommands() }
+        .commands { MainWindowCommands(); UpdateCommands(model: model, updates: model.updates) }
         Settings {
             SettingsView().environmentObject(model)
                 .environment(\.locale, model.language.locale)
@@ -76,6 +76,22 @@ private struct MainWindowCommands: Commands {
                 NSApp.activate(ignoringOtherApps: true)
                 openWindow(id: "main")
             }.keyboardShortcut("0", modifiers: .command)
+        }
+    }
+}
+
+private struct UpdateCommands: Commands {
+    @ObservedObject var model: AppModel
+    @ObservedObject var updates: AppUpdateController
+    @Environment(\.openSettings) private var openSettings
+
+    var body: some Commands {
+        CommandGroup(after: .appInfo) {
+            Button(AppLocalization.text("Buscar actualizaciones…")) {
+                model.settingsPage = .general
+                openSettings()
+                Task { await updates.check(isBusy: model.busy) }
+            }.disabled(model.busy || updates.isChecking)
         }
     }
 }
@@ -110,6 +126,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var timer: Timer?
     private var control: RecorderControl?
     private var lastPublish = Date.distantPast
+    private var lastUpdatePoll = Date.distantPast
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         let model = AppModel.shared
@@ -125,6 +142,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func poll() {
+        if Date().timeIntervalSince(lastUpdatePoll) >= 60 {
+            lastUpdatePoll = Date()
+            AppModel.shared.checkForUpdatesAutomatically()
+        }
         guard let control else { return }
         let model = AppModel.shared
         do {

@@ -16,7 +16,7 @@ final class StatusBarController: NSObject {
         item.button?.target = self
         item.button?.action = #selector(clicked)
         item.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
-        observation = model.objectWillChange
+        observation = Publishers.Merge(model.objectWillChange, model.updates.objectWillChange)
             .debounce(for: .milliseconds(40), scheduler: DispatchQueue.main)
             .sink { [weak self] _ in self?.refresh() }
         refresh()
@@ -50,6 +50,10 @@ final class StatusBarController: NSObject {
             button.title = ""
             button.contentTintColor = nil
             button.toolTip = AppLocalization.text("Grabar todo: audio del computador + entrada seleccionada (micrófono o interfaz). Avisa a los participantes. Clic derecho: opciones.")
+            if case .available = model.updates.state {
+                button.title = " ↑"
+                button.toolTip = AppLocalization.text("Nueva versión disponible. Clic para abrir Mantis; clic derecho para ver opciones de grabación.")
+            }
         }
         if state == .idle,
            let url = Bundle.main.url(forResource: "MantisTemplate", withExtension: "png"),
@@ -66,6 +70,7 @@ final class StatusBarController: NSObject {
 
     @objc private func clicked() {
         if NSApp.currentEvent?.type == .rightMouseUp { showMenu(); return }
+        if !model.busy, case .available = model.updates.state { showWindow(); return }
         if (model.busy && model.activeMeetingID == nil) || model.alert != nil || model.showingOnboarding { showWindow() }
         else { model.toggleQuickRecording() }
     }
@@ -81,6 +86,10 @@ final class StatusBarController: NSObject {
         let open = NSMenuItem(title: AppLocalization.text("Abrir Mantis"), action: #selector(openWindow), keyEquivalent: "")
         open.target = self
         menu.addItem(open)
+        let updates = NSMenuItem(title: AppLocalization.text("Buscar actualizaciones…"), action: #selector(checkUpdates), keyEquivalent: "")
+        updates.target = self
+        updates.isEnabled = !model.busy && !model.updates.isChecking
+        menu.addItem(updates)
         if model.processingID != nil {
             let cancel = NSMenuItem(title: AppLocalization.text("Cancelar transcripción"), action: #selector(cancel), keyEquivalent: "")
             cancel.target = self
@@ -96,4 +105,8 @@ final class StatusBarController: NSObject {
     @objc private func toggle() { model.toggleQuickRecording() }
     @objc private func openWindow() { showWindow() }
     @objc private func cancel() { model.cancelTranscription() }
+    @objc private func checkUpdates() {
+        showWindow()
+        Task { await model.updates.check(isBusy: model.busy) }
+    }
 }

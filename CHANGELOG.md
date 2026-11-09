@@ -1,5 +1,15 @@
 # Cambios
 
+## 0.4.0 — 2026-11-09
+
+- Avisos bilingües de nuevas versiones estables desde GitHub Releases, con comparación numérica de versiones y sin instalar actualizaciones.
+- Búsqueda manual en menú Mantis, barra de menús y General; revisión automática opcional, apagada por defecto y limitada a un intento cada 24 horas.
+- Aviso no modal con novedades, descarga manual, más tarde y omitir versión. Indicador en barra en reposo; sin interrumpir grabaciones ni transcripciones.
+- Consultas HTTPS sin cookies, credenciales ni datos de grabaciones; límites de respuesta/tiempo, enlaces oficiales y manejo silencioso de errores automáticos.
+- 103 pruebas Swift y 12 pruebas del widget; vistas nativas del aviso y ajustes revisadas en inglés y español. No se instalan actualizaciones automáticamente.
+
+Quienes usen 0.3.0 deben instalar 0.4.0 manualmente una vez. La revisión automática se activa en General; no está activada por defecto. Firma ad hoc, sin notarización de Apple: una actualización puede requerir volver a autorizar el audio, sin restablecimientos automáticos.
+
 ## 0.3.0 — 2026-11-06
 
 - App y sitio en inglés y español, con inglés predeterminado. Selector de idioma en bienvenida/General y EN/ES en todas las páginas del sitio.

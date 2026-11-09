@@ -1,9 +1,25 @@
 import AppKit
 import SwiftUI
 import XCTest
+import MeetingCore
 @testable import MeetingRecorder
 
 final class UIRenderTests: XCTestCase {
+    @MainActor
+    func testRenderSyntheticUpdateNotice() async throws {
+        guard let path = ProcessInfo.processInfo.environment["MANTIS_UI_PREVIEW_DIR"] else {
+            throw XCTSkip("Set MANTIS_UI_PREVIEW_DIR for offscreen UI previews.")
+        }
+        let directory = URL(fileURLWithPath: path, isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let updates = AppUpdateController(persists: false, installedVersion: "0.3.0", fetch: { AppRelease(tag: "v0.4.0") })
+        await updates.check()
+        try render(AppUpdateNotice(updates: updates, isBusy: false).padding(24).mantisAppearance(),
+                   size: CGSize(width: 700, height: 260), to: directory.appendingPathComponent("update-notice.png"))
+        try render(AppUpdateNotice(updates: updates, isBusy: true).padding(24).mantisAppearance(),
+                   size: CGSize(width: 700, height: 260), to: directory.appendingPathComponent("update-notice-busy.png"))
+    }
+
     /// Opt-in, synthetic view model. No real library, capture, downloads or desktop screenshots.
     @MainActor
     func testRenderSyntheticScreens() throws {

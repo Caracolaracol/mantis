@@ -40,6 +40,7 @@ struct GeneralSettingsView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
+            AppUpdateSettings(model: model, updates: model.updates)
             VStack(alignment: .leading, spacing: 12) {
                 Label("Idioma", systemImage: "globe").font(.headline).foregroundStyle(MantisTheme.pink)
                 Picker("Idioma", selection: $model.language) {
