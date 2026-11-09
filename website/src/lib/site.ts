@@ -5,6 +5,7 @@ export const site = {
   release: 'https://github.com/Caracolaracol/mantis/releases/latest',
   download: 'https://github.com/Caracolaracol/mantis/releases/download/v0.4.0/Mantis-0.4.0.dmg',
   checksum: 'https://github.com/Caracolaracol/mantis/releases/download/v0.4.0/Mantis-0.4.0.dmg.sha256',
+  sonomaRelease: 'https://github.com/Caracolaracol/mantis/releases/tag/v0.4.1-sonoma',
   portfolio: 'https://agustinrojasm.vercel.app',
 };
 

@@ -6,7 +6,9 @@ APP="${MANTIS_APP:-$ROOT/build/Mantis.app}"
 PLIST="$APP/Contents/Info.plist"
 [[ -f "$PLIST" ]] || { printf 'Falta Mantis.app. Primero compila la app con scripts/build-app.sh.\n' >&2; exit 1; }
 VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$PLIST")"
-OUTPUT="${1:-$ROOT/build/Mantis-$VERSION.dmg}"
+SUFFIX=''
+if [[ "$(/usr/libexec/PlistBuddy -c 'Print :MantisDistributionChannel' "$PLIST" 2>/dev/null || true)" = sonoma ]]; then SUFFIX='-macOS14'; fi
+OUTPUT="${1:-$ROOT/build/Mantis-$VERSION$SUFFIX.dmg}"
 [[ "$OUTPUT" = /* ]] || OUTPUT="$PWD/$OUTPUT"
 [[ ! -e "$OUTPUT" && ! -e "$OUTPUT.sha256" ]] || { printf 'El destino ya existe; no se sobrescribirá: %s\n' "$OUTPUT" >&2; exit 1; }
 

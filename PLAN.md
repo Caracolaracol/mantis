@@ -37,6 +37,15 @@
 - [ ] Validar descargas reales de cada modelo, cancelación y selección.
 - [ ] Validar copia de bibliotecas anteriores con datos de prueba y copia de seguridad.
 
+## Edición Sonoma separada (0.4.1 de prueba)
+
+- [x] Build opt-in `MANTIS_MACOS14=1`, directorio `.build-sonoma/` y DMG `Mantis-0.4.1-macOS14.dmg`; estándar macOS 15 intacto.
+- [x] Captura de micrófono con AVAudioEngine y salida interna independiente del enum de micrófono de macOS 15; audio de sistema/aplicación con ScreenCaptureKit.
+- [x] Comprobación sintética de desfase de 0,5 s entre tonos de las dos fuentes, medida sobre audio decodificado, y exportación M4A de 2,5 s.
+- [x] Canal de avisos que solo acepta Releases `-sonoma`, sin ofrecer descargas estándar incompatibles.
+- [x] 108 pruebas Swift por variante (Sonoma y estándar), más 12 del widget y 12 del sitio.
+- [ ] Probar lanzamiento, permisos, fuentes reales, sincronización y sesiones largas en un Mac con macOS 14 real antes de considerar estable esta edición.
+
 ## Sitio de la aplicación
 
 - [x] Astro estático en `website/`, sin backend ni servicios de analítica.

@@ -2,7 +2,10 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-APP="${MANTIS_APP_OUTPUT:-$ROOT/build/Mantis.app}"
+EDITION="${MANTIS_MACOS14:-0}"
+case "$EDITION" in 0|1) ;; *) printf 'MANTIS_MACOS14 must be 0 or 1\n' >&2; exit 1 ;; esac
+if [[ "$EDITION" = 1 ]]; then DEFAULT_APP="$ROOT/build/Mantis-Sonoma.app"; else DEFAULT_APP="$ROOT/build/Mantis.app"; fi
+APP="${MANTIS_APP_OUTPUT:-$DEFAULT_APP}"
 [[ "$APP" = /* ]] || APP="$PWD/$APP"
 CONFIGURATION="${CONFIGURATION:-debug}"
 SIGN_IDENTITY="${SIGN_IDENTITY:--}"
@@ -21,12 +24,20 @@ ensure_app_closed() {
 ensure_app_closed
 
 cd "$ROOT"
-swift build -c "$CONFIGURATION"
-BIN_DIR="$(swift build -c "$CONFIGURATION" --show-bin-path)"
+BUILD_ARGS=(-c "$CONFIGURATION" --disable-automatic-resolution)
+if [[ "$EDITION" = 1 ]]; then BUILD_ARGS+=(--scratch-path "$ROOT/.build-sonoma"); fi
+swift build "${BUILD_ARGS[@]}"
+BIN_DIR="$(swift build "${BUILD_ARGS[@]}" --show-bin-path)"
 ensure_app_closed
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Frameworks" "$APP/Contents/Resources/ThirdParty"
 cp "$BIN_DIR/MeetingRecorder" "$APP/Contents/MacOS/MeetingRecorder"
 cp "$ROOT/Resources/Info.plist" "$APP/Contents/Info.plist"
+if [[ "$EDITION" = 1 ]]; then
+  /usr/libexec/PlistBuddy -c 'Set :LSMinimumSystemVersion 14.0' "$APP/Contents/Info.plist"
+  /usr/libexec/PlistBuddy -c 'Set :CFBundleShortVersionString 0.4.1' "$APP/Contents/Info.plist"
+  /usr/libexec/PlistBuddy -c 'Set :CFBundleVersion 8' "$APP/Contents/Info.plist"
+  /usr/libexec/PlistBuddy -c 'Add :MantisDistributionChannel string sonoma' "$APP/Contents/Info.plist"
+fi
 cp "$ROOT/Resources/Mantis.icns" "$APP/Contents/Resources/Mantis.icns"
 cp "$ROOT/Resources/MantisTemplate.png" "$APP/Contents/Resources/MantisTemplate.png"
 cp "$ROOT/LICENSE" "$APP/Contents/Resources/LICENSE.txt"

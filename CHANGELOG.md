@@ -1,5 +1,13 @@
 # Cambios
 
+## 0.4.1 Sonoma — versión de prueba
+
+- Edición separada para macOS 14 Sonoma y Apple Silicon. La Release estándar 0.4.0 sigue requiriendo macOS 15 y no se reemplaza.
+- Micrófono mediante AVAudioEngine y audio del computador/aplicación mediante ScreenCaptureKit; muestras alineadas con el reloj del sistema. La edición Sonoma usa esta ruta también al probarse en macOS 15.
+- Inicio y restauración de ventanas compatibles con macOS 14, sin depender de las APIs de SwiftUI de macOS 15.
+- Canal propio de avisos: solo ofrece Releases con sufijo `-sonoma`, nunca instaladores exclusivos de macOS 15.
+- Compilación y DMG independientes con `MANTIS_MACOS14=1` o `bash scripts/build-sonoma.sh`. Pendiente validar permisos, dispositivos y grabaciones reales en Sonoma.
+
 ## 0.4.0 — 2026-11-09
 
 - Avisos bilingües de nuevas versiones estables desde GitHub Releases, con comparación numérica de versiones y sin instalar actualizaciones.

@@ -81,23 +81,27 @@ final class RoutedMicrophone {
     private let engine = AVAudioEngine()
     private var configurationObserver: NSObjectProtocol?
 
-    func start(route: AudioInputRoute, output: CaptureOutput,
+    func start(route: AudioInputRoute?, output: CaptureOutput,
                onFailure: @escaping @MainActor (String) -> Void) throws {
-        guard let device = try AudioInputDevice.available().first(where: { $0.id == route.deviceUID }) else {
-            throw MeetingError.message("La entrada seleccionada se desconectó. Actualiza los dispositivos.")
-        }
-        try route.validate(channelCount: device.channelCount)
         let input = engine.inputNode
-        guard let unit = input.audioUnit else { throw MeetingError.message("No se pudo abrir la entrada de audio.") }
-        var id = device.deviceID
-        let status = AudioUnitSetProperty(unit, kAudioOutputUnitProperty_CurrentDevice, kAudioUnitScope_Global,
-                                         0, &id, UInt32(MemoryLayout<AudioDeviceID>.size))
-        guard status == noErr else { throw MeetingError.message("No se pudo seleccionar la interfaz de audio (\(status)).") }
+        if let route {
+            guard let device = try AudioInputDevice.available().first(where: { $0.id == route.deviceUID }) else {
+                throw MeetingError.message("La entrada seleccionada se desconectó. Actualiza los dispositivos.")
+            }
+            try route.validate(channelCount: device.channelCount)
+            guard let unit = input.audioUnit else { throw MeetingError.message("No se pudo abrir la entrada de audio.") }
+            var id = device.deviceID
+            let status = AudioUnitSetProperty(unit, kAudioOutputUnitProperty_CurrentDevice, kAudioUnitScope_Global,
+                                             0, &id, UInt32(MemoryLayout<AudioDeviceID>.size))
+            guard status == noErr else { throw MeetingError.message("No se pudo seleccionar la interfaz de audio (\(status)).") }
+        }
         let format = input.outputFormat(forBus: 0)
         guard format.sampleRate > 0 else { throw MeetingError.message("La entrada de audio no tiene una frecuencia válida.") }
-        try route.validate(channelCount: Int(format.channelCount))
+        // A nil route uses the engine's default input without altering the system device.
+        let channels = route ?? AudioInputRoute(deviceUID: "system-default", channels: Array(0..<Int(format.channelCount)))
+        try channels.validate(channelCount: Int(format.channelCount))
         input.installTap(onBus: 0, bufferSize: 2048, format: format) { buffer, time in
-            output.appendMicrophone(buffer, at: time, route: route)
+            output.appendMicrophone(buffer, at: time, route: channels)
         }
         configurationObserver = NotificationCenter.default.addObserver(forName: .AVAudioEngineConfigurationChange,
                                                                        object: engine, queue: .main) { _ in

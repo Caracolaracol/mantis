@@ -53,6 +53,11 @@ struct AppUpdateSettings: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Label("Actualizaciones", systemImage: "arrow.down.circle").font(.headline).foregroundStyle(MantisTheme.pink)
+            if AppUpdateChannel.current == .sonoma {
+                Text("Edición Sonoma · macOS 14+ · versión de prueba").font(.caption).foregroundStyle(MantisTheme.pink)
+                Text("Esta edición solo busca versiones del canal Sonoma; no ofrece instaladores exclusivos de macOS 15.")
+                    .font(.caption).foregroundStyle(MantisTheme.secondary)
+            }
             Text(AppLocalization.format("Versión instalada: %@", updates.installedVersion)).font(.caption)
             Toggle("Buscar versiones nuevas automáticamente", isOn: $updates.automaticChecks)
             Text("Desactivado por defecto. Al activarlo, Mantis consulta GitHub al abrir y mientras está en reposo, como máximo una vez al día. GitHub recibe la solicitud y tu dirección IP, nunca tus audios ni textos. No se descarga ni instala nada automáticamente.")

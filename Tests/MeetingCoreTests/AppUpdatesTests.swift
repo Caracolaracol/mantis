@@ -35,12 +35,32 @@ final class AppUpdatesTests: XCTestCase {
     }
 
     func testRequestHasOnlyTrustedMetadataDestinationAndNoCredentialsOrPayload() {
-        let request = AppReleaseClient.request()
+        let request = AppReleaseClient.request(channel: .standard)
         XCTAssertEqual(request.url?.absoluteString, "https://api.github.com/repos/Caracolaracol/mantis/releases/latest")
         XCTAssertEqual(request.httpMethod, "GET")
         XCTAssertNil(request.httpBody)
         XCTAssertNil(request.value(forHTTPHeaderField: "Authorization"))
         XCTAssertNil(request.value(forHTTPHeaderField: "Cookie"))
         XCTAssertEqual(request.timeoutInterval, 15)
+    }
+
+    func testSonomaChannelNeverOffersStandardReleases() throws {
+        let data = Data(#"[{"tag_name":"v99.0.0","draft":false,"prerelease":false},{"tag_name":"v0.4.1-sonoma","draft":false,"prerelease":true},{"tag_name":"v0.4.2-sonoma","draft":false,"prerelease":true},{"tag_name":"v0.4.3-sonoma","draft":true,"prerelease":true}]"#.utf8)
+        let release = try XCTUnwrap(AppReleaseClient.parse(data, channel: .sonoma))
+        XCTAssertEqual(release.version, AppVersion("0.4.2"))
+        XCTAssertEqual(release.pageURL.absoluteString, "https://github.com/Caracolaracol/mantis/releases/tag/v0.4.2-sonoma")
+        XCTAssertNil(AppRelease(tag: "v0.4.2-sonoma"))
+        XCTAssertNil(AppRelease(tag: "v99.0.0", channel: .sonoma))
+        XCTAssertNil(try AppReleaseClient.parse(Data(#"[{"tag_name":"v99.0.0","draft":false,"prerelease":false}]"#.utf8), channel: .sonoma))
+    }
+
+    func testSonomaMetadataRequestAndCompiledChannelAreSeparate() {
+        XCTAssertEqual(AppReleaseClient.request(channel: .sonoma).url?.absoluteString,
+                       "https://api.github.com/repos/Caracolaracol/mantis/releases?per_page=20")
+        #if MANTIS_SONOMA
+        XCTAssertEqual(AppUpdateChannel.current, .sonoma)
+        #else
+        XCTAssertEqual(AppUpdateChannel.current, .standard)
+        #endif
     }
 }

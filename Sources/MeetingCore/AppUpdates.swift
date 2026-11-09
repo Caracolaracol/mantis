@@ -27,12 +27,31 @@ public struct AppVersion: Comparable, Equatable, Sendable {
     public var description: String { "\(major).\(minor).\(patch)" }
 }
 
+public enum AppUpdateChannel: Equatable, Sendable {
+    case standard, sonoma
+
+    public static var current: AppUpdateChannel {
+        #if MANTIS_SONOMA
+        .sonoma
+        #else
+        .standard
+        #endif
+    }
+}
+
 public struct AppRelease: Equatable, Sendable {
     public let version: AppVersion
     public let pageURL: URL
 
-    public init?(tag: String) {
-        guard let version = AppVersion(tag) else { return nil }
+    public init?(tag: String, channel: AppUpdateChannel = .standard) {
+        let versionTag: String
+        switch channel {
+        case .standard: versionTag = tag
+        case .sonoma:
+            guard tag.hasSuffix("-sonoma") else { return nil }
+            versionTag = String(tag.dropLast("-sonoma".count))
+        }
+        guard let version = AppVersion(versionTag) else { return nil }
         self.version = version
         // Do not trust html_url or asset URLs supplied by remote metadata.
         pageURL = URL(string: "https://github.com/Caracolaracol/mantis/releases/tag/\(tag)")!
@@ -47,10 +66,19 @@ public struct AppReleaseClient: Sendable {
     public static let endpoint = URL(string: "https://api.github.com/repos/Caracolaracol/mantis/releases/latest")!
     public static let maximumBytes = 262_144
 
-    public init() {}
+    private let channel: AppUpdateChannel
 
-    public static func request() -> URLRequest {
-        var request = URLRequest(url: endpoint, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 15)
+    public init(channel: AppUpdateChannel = .current) { self.channel = channel }
+
+    public static func endpoint(for channel: AppUpdateChannel) -> URL {
+        switch channel {
+        case .standard: endpoint
+        case .sonoma: URL(string: "https://api.github.com/repos/Caracolaracol/mantis/releases?per_page=20")!
+        }
+    }
+
+    public static func request(channel: AppUpdateChannel = .current) -> URLRequest {
+        var request = URLRequest(url: endpoint(for: channel), cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 15)
         request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
         request.setValue("2022-11-28", forHTTPHeaderField: "X-GitHub-Api-Version")
         request.setValue("Mantis-Update-Check", forHTTPHeaderField: "User-Agent")
@@ -64,9 +92,9 @@ public struct AppReleaseClient: Sendable {
         configuration.urlCredentialStorage = nil
         configuration.urlCache = nil
         configuration.timeoutIntervalForResource = 20
-        let session = URLSession(configuration: configuration, delegate: UpdateRedirectPolicy(), delegateQueue: nil)
+        let session = URLSession(configuration: configuration, delegate: UpdateRedirectPolicy(endpoint: Self.endpoint(for: channel)), delegateQueue: nil)
         defer { session.invalidateAndCancel() }
-        let (bytes, response) = try await session.bytes(for: Self.request())
+        let (bytes, response) = try await session.bytes(for: Self.request(channel: channel))
         guard let http = response as? HTTPURLResponse else { throw AppUpdateError.invalidResponse }
         if http.statusCode == 404 { return nil }
         guard http.statusCode == 200 else { throw AppUpdateError.unavailable }
@@ -76,15 +104,22 @@ public struct AppReleaseClient: Sendable {
             guard data.count < Self.maximumBytes else { throw AppUpdateError.responseTooLarge }
             data.append(byte)
         }
-        return try Self.parse(data)
+        return try Self.parse(data, channel: channel)
     }
 
-    public static func parse(_ data: Data) throws -> AppRelease? {
+    public static func parse(_ data: Data, channel: AppUpdateChannel = .standard) throws -> AppRelease? {
         guard data.count <= maximumBytes else { throw AppUpdateError.responseTooLarge }
         struct Metadata: Decodable {
             let tag_name: String
             let draft: Bool
             let prerelease: Bool
+        }
+        if channel == .sonoma {
+            // Sonoma is a distinct opt-in compatibility channel, including its test releases.
+            // Never offer a standard macOS-15-only installer to a Sonoma user.
+            let releases = try JSONDecoder().decode([Metadata].self, from: data)
+            return releases.filter { !$0.draft }.compactMap { AppRelease(tag: $0.tag_name, channel: .sonoma) }
+                .max { $0.version < $1.version }
         }
         let metadata = try JSONDecoder().decode(Metadata.self, from: data)
         guard !metadata.draft, !metadata.prerelease else { return nil }
@@ -94,10 +129,12 @@ public struct AppReleaseClient: Sendable {
 }
 
 private final class UpdateRedirectPolicy: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
+    private let endpoint: URL
+    init(endpoint: URL) { self.endpoint = endpoint }
     func urlSession(_ session: URLSession, task: URLSessionTask,
                     willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest,
                     completionHandler: @escaping (URLRequest?) -> Void) {
         // A renamed repository or unexpected redirect must not silently change the destination.
-        completionHandler(request.url == AppReleaseClient.endpoint ? request : nil)
+        completionHandler(request.url == endpoint ? request : nil)
     }
 }

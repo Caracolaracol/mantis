@@ -85,7 +85,7 @@ final class RecordingService {
             }
             filter = SCContentFilter(display: display, including: [application], exceptingWindows: [])
         }
-        let plan = ApplicationCapturePlan(mode: mode)
+        let plan = ApplicationCapturePlan(mode: mode, hasSelectedInput: route != nil)
         let output = try CaptureOutput(destination: destination, includeMicrophone: plan.capturesMicrophone) { [weak self] message in
             Task { @MainActor in
                 guard let self, !self.stopping else { return }
@@ -94,16 +94,15 @@ final class RecordingService {
             }
         }
         let configuration = plan.configuration()
-        if route != nil { configuration.captureMicrophone = false }
         let stream = SCStream(filter: filter, configuration: configuration, delegate: output)
-        for type in plan.outputTypes where route == nil || type != .microphone {
+        for type in plan.outputTypes {
             try stream.addStreamOutput(output, type: type, sampleHandlerQueue: output.queue)
         }
         self.output = output
         self.stream = stream
         do {
             try await stream.startCapture()
-            if mode.capturesMicrophone, let route {
+            if plan.usesSeparateMicrophone {
                 let microphone = RoutedMicrophone()
                 try microphone.start(route: route, output: output, onFailure: onFailure)
                 self.routedMicrophone = microphone
@@ -147,6 +146,8 @@ final class RecordingService {
 
 /// All writer state is confined to queue, including stream delegate errors.
 final class CaptureOutput: NSObject, SCStreamOutput, SCStreamDelegate, @unchecked Sendable {
+    // Do not use the macOS-15-only SCStreamOutputType.microphone for internal audio.
+    enum AudioSource { case audio, microphone }
     let queue = DispatchQueue(label: "MeetingRecorder.capture", qos: .userInitiated)
     private let writer: AVAssetWriter
     private let systemInput: AVAssetWriterInput?
@@ -177,7 +178,8 @@ final class CaptureOutput: NSObject, SCStreamOutput, SCStreamDelegate, @unchecke
     }
 
     func stream(_ stream: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, of type: SCStreamOutputType) {
-        append(sampleBuffer, type: type)
+        if type == .audio { append(sampleBuffer, type: .audio) }
+        else if #available(macOS 15, *), type == .microphone { append(sampleBuffer, type: .microphone) }
     }
 
     /// Copy selected channels before the engine reuses its real-time buffer.
@@ -221,7 +223,7 @@ final class CaptureOutput: NSObject, SCStreamOutput, SCStreamDelegate, @unchecke
     }
 
     // Internal seam for deterministic tests with synthetic samples; always call on queue.
-    func append(_ sampleBuffer: CMSampleBuffer, type: SCStreamOutputType) {
+    func append(_ sampleBuffer: CMSampleBuffer, type: AudioSource) {
         let input: AVAssetWriterInput
         switch type {
         case .audio:
@@ -231,7 +233,6 @@ final class CaptureOutput: NSObject, SCStreamOutput, SCStreamDelegate, @unchecke
             // Defense in depth: ignore unexpected mic samples before they can start a session.
             guard let microphoneInput else { return }
             input = microphoneInput
-        default: return
         }
         guard CMSampleBufferDataIsReady(sampleBuffer), CMSampleBufferGetNumSamples(sampleBuffer) > 0,
               failure == nil else { return }

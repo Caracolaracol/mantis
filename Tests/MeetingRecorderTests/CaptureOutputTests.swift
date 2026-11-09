@@ -90,16 +90,19 @@ final class CaptureOutputTests: XCTestCase {
         let plan = ApplicationCapturePlan(mode: .applicationOnly)
         let configuration = plan.configuration()
         XCTAssertFalse(plan.capturesMicrophone)
-        XCTAssertFalse(configuration.captureMicrophone)
+        if #available(macOS 15, *) { XCTAssertFalse(configuration.captureMicrophone) }
         XCTAssertTrue(configuration.capturesAudio)
-        XCTAssertFalse(plan.outputTypes.contains(.microphone))
+        if #available(macOS 15, *) { XCTAssertFalse(plan.outputTypes.contains(.microphone)) }
         XCTAssertTrue(plan.outputTypes.contains(.audio))
     }
 
     func testCombinedPlanEnablesBothSources() {
         let plan = ApplicationCapturePlan(mode: .application)
-        XCTAssertTrue(plan.configuration().captureMicrophone)
-        XCTAssertTrue(plan.outputTypes.contains(.microphone))
+        if #available(macOS 15, *) {
+            XCTAssertEqual(plan.configuration().captureMicrophone, CapturePlatform.supportsNativeMicrophone)
+            XCTAssertEqual(plan.outputTypes.contains(.microphone), CapturePlatform.supportsNativeMicrophone)
+        }
+        XCTAssertEqual(plan.usesSeparateMicrophone, !CapturePlatform.supportsNativeMicrophone)
         XCTAssertTrue(plan.outputTypes.contains(.audio))
     }
 
@@ -119,8 +122,10 @@ final class CaptureOutputTests: XCTestCase {
         for mode in [RecordingMode.systemAudio, .systemAndMicrophone] {
             let plan = ApplicationCapturePlan(mode: mode)
             XCTAssertTrue(plan.configuration().capturesAudio)
-            XCTAssertEqual(plan.configuration().captureMicrophone, mode.capturesMicrophone)
-            XCTAssertEqual(plan.outputTypes.contains(.microphone), mode.capturesMicrophone)
+            if #available(macOS 15, *) {
+                XCTAssertEqual(plan.configuration().captureMicrophone, mode.capturesMicrophone && CapturePlatform.supportsNativeMicrophone)
+                XCTAssertEqual(plan.outputTypes.contains(.microphone), mode.capturesMicrophone && CapturePlatform.supportsNativeMicrophone)
+            }
         }
     }
 
@@ -134,6 +139,90 @@ final class CaptureOutputTests: XCTestCase {
             XCTAssertTrue(requested)
             XCTAssertFalse(allowed)
         }
+    }
+
+    func testSonomaPlansUseSeparateMicrophoneOnlyWhenRequested() {
+        for mode in [RecordingMode.systemAudio, .systemAndMicrophone, .applicationOnly, .application] {
+            let plan = ApplicationCapturePlan(mode: mode, supportsNativeMicrophone: false)
+            XCTAssertFalse(plan.usesNativeMicrophone)
+            XCTAssertEqual(plan.usesSeparateMicrophone, mode.capturesMicrophone)
+            XCTAssertEqual(plan.outputTypes.count, 2)
+            XCTAssertTrue(plan.outputTypes.contains(.audio))
+            XCTAssertTrue(plan.outputTypes.contains(.screen))
+            if #available(macOS 15, *) {
+                XCTAssertFalse(plan.configuration().captureMicrophone)
+                XCTAssertFalse(plan.outputTypes.contains(.microphone))
+            }
+        }
+    }
+
+    func testSelectedInterfaceUsesSeparateCaptureEvenOnMacOS15() {
+        let plan = ApplicationCapturePlan(mode: .systemAndMicrophone, supportsNativeMicrophone: true, hasSelectedInput: true)
+        XCTAssertTrue(plan.usesSeparateMicrophone)
+        XCTAssertFalse(plan.usesNativeMicrophone)
+        XCTAssertEqual(plan.outputTypes.count, 2)
+    }
+
+    func testSonomaEngineAndSystemSamplesShareHostClockAndExportM4A() async throws {
+        let root = try directory()
+        let destination = root.appendingPathComponent("sonoma.mov")
+        let output = try CaptureOutput(destination: destination, includeMicrophone: true) { _ in }
+        let format = try XCTUnwrap(AVAudioFormat(standardFormatWithSampleRate: 48_000, channels: 1))
+        let microphone = try XCTUnwrap(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 24_000))
+        microphone.frameLength = 24_000
+        let samples = try XCTUnwrap(microphone.floatChannelData)
+        for frame in 0..<24_000 { samples[0][frame] = 0.125 * sin(Float(frame) * 2 * .pi * 440 / 48_000) }
+        for index in 0..<4 {
+            let hostSeconds = 10 + Double(index) / 2
+            output.appendMicrophone(microphone, at: AVAudioTime(hostTime: AVAudioTime.hostTime(forSeconds: hostSeconds)),
+                                    route: AudioInputRoute(deviceUID: "synthetic", channels: [0]))
+            let systemSample = try silentBuffer(at: CMTime(seconds: hostSeconds + 0.5, preferredTimescale: 48_000))
+            let block = try XCTUnwrap(CMSampleBufferGetDataBuffer(systemSample))
+            let step: Float = 2 * .pi * 660 / 48_000
+            let tone: [Float] = (0..<24_000).map { 0.25 * sin(Float($0) * step) }
+            XCTAssertEqual(tone.withUnsafeBytes {
+                CMBlockBufferReplaceDataBytes(with: $0.baseAddress!, blockBuffer: block, offsetIntoDestination: 0, dataLength: $0.count)
+            }, noErr)
+            let system = ImmutableSample(systemSample)
+            await withCheckedContinuation { continuation in
+                output.queue.async {
+                    output.append(system.value, type: .audio)
+                    continuation.resume()
+                }
+            }
+            try await Task.sleep(nanoseconds: 30_000_000)
+        }
+        try await output.finish()
+        let asset = AVURLAsset(url: destination)
+        let tracks = try await asset.loadTracks(withMediaType: .audio)
+        XCTAssertEqual(tracks.count, 2)
+        func firstAudibleTime(_ track: AVAssetTrack) throws -> Double {
+            let reader = try AVAssetReader(asset: asset)
+            let output = AVAssetReaderTrackOutput(track: track, outputSettings: [
+                AVFormatIDKey: kAudioFormatLinearPCM, AVLinearPCMIsFloatKey: true,
+                AVLinearPCMBitDepthKey: 32, AVLinearPCMIsNonInterleaved: false
+            ])
+            reader.add(output)
+            XCTAssertTrue(reader.startReading())
+            defer { reader.cancelReading() }
+            while let sample = output.copyNextSampleBuffer() {
+                let block = try XCTUnwrap(CMSampleBufferGetDataBuffer(sample))
+                var values = [Float](repeating: 0, count: CMSampleBufferGetNumSamples(sample))
+                XCTAssertEqual(values.withUnsafeMutableBytes {
+                    CMBlockBufferCopyDataBytes(block, atOffset: 0, dataLength: $0.count, destination: $0.baseAddress!)
+                }, noErr)
+                if let index = values.firstIndex(where: { abs($0) > 0.025 }) {
+                    return CMSampleBufferGetPresentationTimeStamp(sample).seconds + Double(index) / 48_000
+                }
+            }
+            XCTFail("No audible samples in synthetic track")
+            return .nan
+        }
+        // AAC may pad the beginning with silence. Check decoded signal onset,
+        // not the padded track or packet start times.
+        XCTAssertEqual(try firstAudibleTime(tracks[0]) - firstAudibleTime(tracks[1]), 0.5, accuracy: 0.05)
+        let duration = try await AudioNormalizer().exportM4A(source: destination, destination: root.appendingPathComponent("sonoma.m4a"))
+        XCTAssertEqual(duration, 2.5, accuracy: 0.1)
     }
 
     func testApplicationOnlyWriterCreatesOneAudioTrackAndIgnoresMicrophone() async throws {

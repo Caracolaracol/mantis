@@ -54,15 +54,14 @@ struct MeetingRecorderApp: App {
             MainWindowView(model: model, delegate: delegate)
         }
         .defaultSize(width: 780, height: 820)
-        .defaultLaunchBehavior(startWithoutWindow ? .suppressed : .presented)
-        .restorationBehavior(.disabled)
+        .mantisLaunchBehavior(startWithoutWindow: startWithoutWindow)
         .commands { MainWindowCommands(); UpdateCommands(model: model, updates: model.updates) }
         Settings {
             SettingsView().environmentObject(model)
                 .environment(\.locale, model.language.locale)
                 .id(model.language)
         }
-            .restorationBehavior(.disabled)
+            .mantisRestorationBehavior()
     }
 }
 
@@ -112,7 +111,7 @@ private struct MainWindowView: View {
         .mantisAppearance()
         .environment(\.locale, model.language.locale)
         .id(model.language)
-        .background(WindowCloseGuard(busy: model.busy))
+        .background(WindowCloseGuard(busy: model.busy, configure: delegate.configureMainWindow))
         .onAppear {
             delegate.reopenWindow = { openWindow(id: "main") }
         }
@@ -127,6 +126,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var control: RecorderControl?
     private var lastPublish = Date.distantPast
     private var lastUpdatePoll = Date.distantPast
+    private var configuredInitialWindow = false
+
+    func configureMainWindow(_ window: NSWindow) {
+        guard CapturePlatform.usesLegacyWindowPolicy else { return }
+        window.isRestorable = false
+        guard !configuredInitialWindow else { return }
+        configuredInitialWindow = true
+        if LaunchPreferences.startsWithoutWindow() { window.orderOut(nil) }
+    }
+
+    func applicationShouldSaveSecureApplicationState(_ app: NSApplication) -> Bool { false }
+    func applicationShouldRestoreSecureApplicationState(_ app: NSApplication) -> Bool { false }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         let model = AppModel.shared
@@ -215,8 +226,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
 struct WindowCloseGuard: NSViewRepresentable {
     let busy: Bool
+    var configure: ((NSWindow) -> Void)?
     func makeNSView(context: Context) -> NSView { NSView() }
     func updateNSView(_ view: NSView, context: Context) {
-        DispatchQueue.main.async { view.window?.standardWindowButton(.closeButton)?.isEnabled = !busy }
+        DispatchQueue.main.async {
+            guard let window = view.window else { return }
+            window.standardWindowButton(.closeButton)?.isEnabled = !busy
+            configure?(window)
+        }
     }
 }

@@ -62,6 +62,8 @@ test('download links and privacy/signing limitations are explicit', async () => 
   assert.match(englishDocs, /off by default/);
   assert.match(docs, /id="actualizaciones"/);
   assert.match(docs, /tu dirección IP/);
+  assert.match(docs, /v0\.4\.1-sonoma/);
+  assert.match(englishDocs, /test release/);
   for (const text of ['ScreenCapture', 'local.agus.MeetingRecorder', 'FileVault', 'Gatekeeper', 'SketchyBar']) assert.ok(docs.includes(text));
 });
 

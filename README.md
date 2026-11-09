@@ -50,6 +50,25 @@ La app y el sitio están disponibles en **inglés y español**, con **inglés po
 - Solo se consulta `https://api.github.com/repos/Caracolaracol/mantis/releases/latest`, sin cuenta, token, cookies, audios ni textos. GitHub recibe la solicitud y la dirección IP. Se usan HTTPS, límites de tamaño/tiempo y enlaces oficiales construidos localmente; no se siguen destinos arbitrarios entregados por el servidor.
 - **Quienes usen 0.3.0 deben instalar 0.4.0 manualmente una vez** para recibir estos avisos futuros. No es un actualizador automático ni usa Sparkle.
 
+### Edición separada para macOS 14 Sonoma
+
+La edición **Sonoma 0.4.1** es una versión de prueba independiente para **macOS 14+ y Apple Silicon**. No reemplaza la Release estándar 0.4.0 (macOS 15+) ni se marca como última versión estable.
+
+**[Descargar versión de prueba Sonoma](https://github.com/Caracolaracol/mantis/releases/tag/v0.4.1-sonoma)**.
+
+Usa AVAudioEngine para el micrófono y ScreenCaptureKit para el audio del sistema o de una aplicación. El archivo `Mantis-0.4.1-macOS14.dmg` contiene la app con el mismo identificador y conserva la biblioteca y preferencias existentes. **Elige una edición: no ejecutes ambas a la vez**, y sal completamente antes de reemplazar la app.
+
+Los avisos de la edición Sonoma consultan únicamente el canal de Releases con sufijo `-sonoma`; no te ofrecerán una actualización estándar que vuelva a exigir macOS 15. La revisión automática sigue apagada por defecto. Su consulta usa `https://api.github.com/repos/Caracolaracol/mantis/releases?per_page=20`, sin audios, textos, cookies o credenciales.
+
+Compilar y empaquetar sin tocar la edición estándar:
+
+```bash
+bash scripts/build-sonoma.sh
+./scripts/verify-dmg.sh build/Mantis-0.4.1-macOS14.dmg
+```
+
+El build utiliza `.build-sonoma/` y `build/Mantis-Sonoma.app`. La firma sigue siendo ad hoc, sin notarización. **La compilación con objetivo 14 y las pruebas de la ruta alternativa no sustituyen una prueba en un Mac con Sonoma real**: permisos, fuentes de audio, sincronización y sesiones largas siguen pendientes de validar allí.
+
 ## Requisitos
 
 | Para usar | Para compilar |
