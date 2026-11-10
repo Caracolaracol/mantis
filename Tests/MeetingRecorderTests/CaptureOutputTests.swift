@@ -163,6 +163,26 @@ final class CaptureOutputTests: XCTestCase {
         XCTAssertEqual(plan.outputTypes.count, 2)
     }
 
+    func testNativeStereoInputAcceptsBothChannelsAndDefaultKeepsBoth() throws {
+        let hardware = try XCTUnwrap(AVAudioFormat(standardFormatWithSampleRate: 48_000, channels: 2))
+        let selected = try AudioInputCaptureConfiguration(hardwareFormat: hardware,
+                                                        route: AudioInputRoute(deviceUID: "stereo", channels: [0, 1]))
+        XCTAssertEqual(selected.route.channels, [0, 1])
+        XCTAssertEqual(selected.format.channelCount, 2)
+        let automatic = try AudioInputCaptureConfiguration(hardwareFormat: hardware, route: nil)
+        XCTAssertEqual(automatic.route.channels, [0, 1])
+    }
+
+    func testUnavailableChannelsAreNotMisreportedAsEmptySelection() throws {
+        let mono = try XCTUnwrap(AVAudioFormat(standardFormatWithSampleRate: 48_000, channels: 1))
+        XCTAssertThrowsError(try AudioInputCaptureConfiguration(hardwareFormat: mono,
+                           route: AudioInputRoute(deviceUID: "changed-device", channels: [0, 1]))) { error in
+            XCTAssertTrue(error.localizedDescription.contains("1, 2"))
+            XCTAssertFalse(error.localizedDescription.contains("at least"))
+            XCTAssertFalse(error.localizedDescription.contains("al menos"))
+        }
+    }
+
     func testSonomaEngineAndSystemSamplesShareHostClockAndExportM4A() async throws {
         let root = try directory()
         let destination = root.appendingPathComponent("sonoma.mov")

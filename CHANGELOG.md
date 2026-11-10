@@ -1,5 +1,13 @@
 # Cambios
 
+## 0.4.2 Sonoma — correcciones de preparación y canales (prueba)
+
+- Selección de varios canales conservada al reaplicar la misma entrada; el último canal no puede desmarcarse accidentalmente. Formato de captura tomado de la entrada nativa del dispositivo y errores distintos para selección vacía o canales no disponibles.
+- Preparación con mensajes de etapa y botón **Cancelar preparación**, también desde la barra de menús. Las esperas de fuentes e inicio de ScreenCaptureKit tienen límite de 15 segundos; no se impone ese límite a la decisión del usuario en un permiso de micrófono.
+- Los callbacks tardíos de un inicio cancelado o vencido se descartan y solicitan detener su stream, sin activar otra grabación. Si macOS no confirma una detención, se conserva el temporal, se avisa que hay que salir y se impide iniciar otra captura hasta reiniciar la app.
+- Captura de todo el computador con filtro de exclusión de aplicaciones, evitando el filtro de ventanas vacío problemático en versiones antiguas de ScreenCaptureKit. No se ha confirmado que ese sea el fallo concreto del equipo reportado.
+- 119 pruebas Swift por variante, incluidas preparación bloqueada, cancelación, callbacks tardíos y selección estéreo. Aún pendiente probar en el Mac con Sonoma que reportó el problema.
+
 ## 0.4.1 Sonoma — versión de prueba
 
 - Edición separada para macOS 14 Sonoma y Apple Silicon. La Release estándar 0.4.0 sigue requiriendo macOS 15 y no se reemplaza.

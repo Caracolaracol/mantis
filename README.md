@@ -52,11 +52,11 @@ La app y el sitio están disponibles en **inglés y español**, con **inglés po
 
 ### Edición separada para macOS 14 Sonoma
 
-La edición **Sonoma 0.4.1** es una versión de prueba independiente para **macOS 14+ y Apple Silicon**. No reemplaza la Release estándar 0.4.0 (macOS 15+) ni se marca como última versión estable.
+La edición **Sonoma 0.4.2** es una versión de prueba independiente para **macOS 14+ y Apple Silicon**. No reemplaza la Release estándar 0.4.0 (macOS 15+) ni se marca como última versión estable.
 
-**[Descargar versión de prueba Sonoma](https://github.com/Caracolaracol/mantis/releases/tag/v0.4.1-sonoma)**.
+**[Descargar versión de prueba Sonoma](https://github.com/Caracolaracol/mantis/releases/tag/v0.4.2-sonoma)**.
 
-Usa AVAudioEngine para el micrófono y ScreenCaptureKit para el audio del sistema o de una aplicación. El archivo `Mantis-0.4.1-macOS14.dmg` contiene la app con el mismo identificador y conserva la biblioteca y preferencias existentes. **Elige una edición: no ejecutes ambas a la vez**, y sal completamente antes de reemplazar la app.
+Usa AVAudioEngine para el micrófono y ScreenCaptureKit para el audio del sistema o de una aplicación. El archivo `Mantis-0.4.2-macOS14.dmg` contiene la app con el mismo identificador y conserva la biblioteca y preferencias existentes. **Elige una edición: no ejecutes ambas a la vez**, y sal completamente antes de reemplazar la app.
 
 Los avisos de la edición Sonoma consultan únicamente el canal de Releases con sufijo `-sonoma`; no te ofrecerán una actualización estándar que vuelva a exigir macOS 15. La revisión automática sigue apagada por defecto. Su consulta usa `https://api.github.com/repos/Caracolaracol/mantis/releases?per_page=20`, sin audios, textos, cookies o credenciales.
 
@@ -64,10 +64,12 @@ Compilar y empaquetar sin tocar la edición estándar:
 
 ```bash
 bash scripts/build-sonoma.sh
-./scripts/verify-dmg.sh build/Mantis-0.4.1-macOS14.dmg
+./scripts/verify-dmg.sh build/Mantis-0.4.2-macOS14.dmg
 ```
 
 El build utiliza `.build-sonoma/` y `build/Mantis-Sonoma.app`. La firma sigue siendo ad hoc, sin notarización. **La compilación con objetivo 14 y las pruebas de la ruta alternativa no sustituyen una prueba en un Mac con Sonoma real**: permisos, fuentes de audio, sincronización y sesiones largas siguen pendientes de validar allí.
+
+Sonoma 0.4.2 conserva selecciones multicanal, usa el formato nativo de entrada e identifica errores de canales no disponibles en vez de pedir elegir solo uno. Mientras prepara una grabación, muestra la etapa y permite **Cancelar preparación**. Las esperas de fuentes e inicio de ScreenCaptureKit vencen a los 15 segundos; el permiso de micrófono espera la decisión del usuario, pero se puede cancelar la preparación. Cancelar nunca adopta un callback tardío como una nueva grabación. Si una detención no se confirma, sal completamente de la app antes de reintentar.
 
 ## Requisitos
 

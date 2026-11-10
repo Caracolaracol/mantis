@@ -26,13 +26,15 @@ struct AudioInputPicker: View {
                             Toggle("\(channel + 1)", isOn: Binding(
                                 get: { model.selectedInputChannels.contains(channel) },
                                 set: { enabled in
-                                    if enabled { model.selectedInputChannels.insert(channel) }
-                                    else { model.selectedInputChannels.remove(channel) }
+                                    model.setInputChannel(channel, enabled: enabled)
                                 })).toggleStyle(.checkbox).font(.caption)
+                                .disabled(model.selectedInputChannels.count == 1 && model.selectedInputChannels.contains(channel))
                         }
                     }.padding(.vertical, 2)
                 }
                 Text("Solo se guardan los canales marcados, mezclados a mono. «Todo» incluye computador + entrada, no todos los canales de la interfaz.")
+                    .font(.caption).foregroundStyle(MantisTheme.secondary)
+                Text("Puedes marcar ambos canales. Debe quedar al menos uno seleccionado.")
                     .font(.caption).foregroundStyle(MantisTheme.secondary)
             } else {
                 Text("Usa la entrada de Ajustes del Sistema → Sonido → Entrada. Para elegir canales específicos, selecciona tu interfaz aquí.")

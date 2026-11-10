@@ -90,6 +90,11 @@ final class StatusBarController: NSObject {
         updates.target = self
         updates.isEnabled = !model.busy && !model.updates.isChecking
         menu.addItem(updates)
+        if model.startingRecording {
+            let cancel = NSMenuItem(title: AppLocalization.text("Cancelar preparación"), action: #selector(cancelPreparation), keyEquivalent: "")
+            cancel.target = self
+            menu.addItem(cancel)
+        }
         if model.processingID != nil {
             let cancel = NSMenuItem(title: AppLocalization.text("Cancelar transcripción"), action: #selector(cancel), keyEquivalent: "")
             cancel.target = self
@@ -105,6 +110,7 @@ final class StatusBarController: NSObject {
     @objc private func toggle() { model.toggleQuickRecording() }
     @objc private func openWindow() { showWindow() }
     @objc private func cancel() { model.cancelTranscription() }
+    @objc private func cancelPreparation() { model.cancelRecordingPreparation() }
     @objc private func checkUpdates() {
         showWindow()
         Task { await model.updates.check(isBusy: model.busy) }

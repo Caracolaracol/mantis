@@ -14,26 +14,28 @@ final class AppModel: ObservableObject {
         didSet { if !isPreview { UserDefaults.standard.set(language.rawValue, forKey: AppLanguage.preferenceKey) } }
     }
     @Published var mode = RecordingMode(rawValue: UserDefaults.standard.string(forKey: "recordingMode") ?? "") ?? .systemAndMicrophone {
-        didSet { UserDefaults.standard.set(mode.rawValue, forKey: "recordingMode") }
+        didSet { if !isPreview { UserDefaults.standard.set(mode.rawValue, forKey: "recordingMode") } }
     }
     @Published var automaticTranscription = RecordingPreferences.automaticTranscription() {
-        didSet { RecordingPreferences.setAutomaticTranscription(automaticTranscription) }
+        didSet { if !isPreview { RecordingPreferences.setAutomaticTranscription(automaticTranscription) } }
     }
     @Published var selectedApplicationID: Int32?
     @Published private(set) var applications: [SCRunningApplication] = []
     @Published private(set) var audioInputs: [AudioInputDevice] = []
     @Published var selectedAudioInputUID = UserDefaults.standard.string(forKey: "audioInputUID") ?? "" {
         didSet {
-            UserDefaults.standard.set(selectedAudioInputUID, forKey: "audioInputUID")
+            guard selectedAudioInputUID != oldValue else { return }
+            if !isPreview { UserDefaults.standard.set(selectedAudioInputUID, forKey: "audioInputUID") }
             selectedInputChannels = [0]
         }
     }
     @Published var selectedInputChannels = Set((UserDefaults.standard.array(forKey: "audioInputChannels") as? [Int]) ?? [0]) {
-        didSet { UserDefaults.standard.set(selectedInputChannels.sorted(), forKey: "audioInputChannels") }
+        didSet { if !isPreview { UserDefaults.standard.set(selectedInputChannels.sorted(), forKey: "audioInputChannels") } }
     }
     @Published private(set) var activeMeetingID: UUID?
     @Published private(set) var processingID: UUID?
     @Published private(set) var preparing = false
+    @Published private(set) var startingRecording = false
     @Published private(set) var loadingApplications = false
     @Published private(set) var phase = ""
     @Published private(set) var elapsed: TimeInterval = 0
@@ -53,7 +55,7 @@ final class AppModel: ObservableObject {
     @Published private(set) var store: MeetingStore?
     let models: ModelStore?
     let updates: AppUpdateController
-    private let recorder = RecordingService()
+    private let recorder: any RecordingBackend
     private let normalizer = AudioNormalizer()
     private let transcriber = NativeTranscriber()
     private var pipelineTask: Task<Void, Never>?
@@ -61,6 +63,7 @@ final class AppModel: ObservableObject {
     private var startedAt: Date?
     private var stopping = false
     private var modelDownloadTask: Task<Void, Never>?
+    private var recordingStartTask: Task<Void, Never>?
     private var isPreview = false
 
     var busy: Bool { preparing || configuringPermissions || systemAudioPermissionResetState == .running || activeMeetingID != nil || processingID != nil || modelDownloadID != nil }
@@ -69,12 +72,25 @@ final class AppModel: ObservableObject {
         selectedAudioInputUID.isEmpty ? nil : AudioInputRoute(deviceUID: selectedAudioInputUID, channels: selectedInputChannels.sorted())
     }
 
-    init(preview: Bool = false) {
+    func setInputChannel(_ channel: Int, enabled: Bool) {
+        guard !busy, channel >= 0 else { return }
+        if enabled { selectedInputChannels.insert(channel) }
+        else if selectedInputChannels.count > 1 { selectedInputChannels.remove(channel) }
+    }
+
+    func cancelRecordingPreparation() {
+        guard startingRecording else { return }
+        phase = "Cancelando preparación…"
+        recordingStartTask?.cancel()
+    }
+
+    init(preview: Bool = false, recorder: (any RecordingBackend)? = nil, previewStore: MeetingStore? = nil) {
+        self.recorder = recorder ?? RecordingService()
         updates = preview ? AppUpdateController(persists: false, fetch: { nil }) : AppUpdateController()
         if preview {
             isPreview = true
             models = nil
-            store = nil
+            store = previewStore
             showingOnboarding = false
             let sample = Meeting(title: AppLocalization.text("Planificación del equipo"), mode: .systemAndMicrophone, audioFileName: "Reunión.m4a", status: .completed)
             var ready = sample
@@ -172,15 +188,26 @@ final class AppModel: ObservableObject {
         var meeting = Meeting(mode: mode, audioFileName: "audio.m4a",
                               sourceApplication: mode.capturesWholeSystemAudio ? "Todo el computador" : (mode.capturesApplication ? appName : nil), status: .recording)
         preparing = true
-        Task {
-            defer { preparing = false }
+        startingRecording = true
+        phase = "Verificando permisos…"
+        recordingStartTask = Task {
+            defer {
+                startingRecording = false
+                if !stopping {
+                    preparing = false
+                    phase = ""
+                }
+                recordingStartTask = nil
+            }
             do {
                 meeting = try store.create(meeting)
                 if automaticTranscription { try requireModel() }
                 try persist(meeting)
                 selection = meeting.id
                 let destination = mode == .microphone && route == nil ? try store.finalAudioURL(for: meeting) : try store.captureURL(for: meeting)
-                try await recorder.start(mode: mode, applicationID: appID, destination: destination, route: route) { [weak self] message in
+                try await recorder.start(mode: mode, applicationID: appID, destination: destination, route: route, progress: { [weak self] stage in
+                    self?.phase = stage
+                }) { [weak self] message in
                     self?.stopRecording(captureError: message)
                 }
                 refreshPermissions()
@@ -191,10 +218,11 @@ final class AppModel: ObservableObject {
                 else { startTimer() }
             } catch {
                 meeting.status = .failed
-                let message = CaptureErrorPresentation.message(for: error)
+                let cancelled = Task.isCancelled || error is CancellationError
+                let message = cancelled ? AppLocalization.text("Preparación de grabación cancelada.") : CaptureErrorPresentation.message(for: error)
                 meeting.error = message
                 saveOrReport(meeting)
-                alert = message
+                if !cancelled { alert = message }
                 refreshPermissions()
             }
         }
@@ -288,6 +316,10 @@ final class AppModel: ObservableObject {
     }
 
     func stopRecording(captureError: String? = nil) {
+        if activeMeetingID == nil, captureError == nil, startingRecording {
+            cancelRecordingPreparation()
+            return
+        }
         guard let id = activeMeetingID, !stopping else { return }
         stopping = true
         preparing = true
@@ -296,7 +328,11 @@ final class AppModel: ObservableObject {
         Task {
             var failure = captureError
             do { try await recorder.stop() }
-            catch { failure = failure ?? error.localizedDescription }
+            catch {
+                // A stop timeout needs the restart warning even if capture had already failed.
+                if error is CaptureRequestError { failure = error.localizedDescription }
+                else { failure = failure ?? error.localizedDescription }
+            }
             activeMeetingID = nil
             microphoneLevel = 0
             defer {

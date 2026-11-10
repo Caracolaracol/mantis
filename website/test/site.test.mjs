@@ -62,7 +62,7 @@ test('download links and privacy/signing limitations are explicit', async () => 
   assert.match(englishDocs, /off by default/);
   assert.match(docs, /id="actualizaciones"/);
   assert.match(docs, /tu dirección IP/);
-  assert.match(docs, /v0\.4\.1-sonoma/);
+  assert.match(docs, /v0\.4\.2-sonoma/);
   assert.match(englishDocs, /test release/);
   for (const text of ['ScreenCapture', 'local.agus.MeetingRecorder', 'FileVault', 'Gatekeeper', 'SketchyBar']) assert.ok(docs.includes(text));
 });
@@ -87,7 +87,7 @@ test('home offers separate standard and Sonoma downloads with clear requirements
     const html = await readFile(path.join(root, file), 'utf8');
     assert.match(html, /releases\/download\/v0\.4\.0\/Mantis-0\.4\.0\.dmg/);
     assert.match(html, /class="sonoma-download"/);
-    assert.match(html, /releases\/download\/v0\.4\.1-sonoma\/Mantis-0\.4\.1-macOS14\.dmg/);
+    assert.match(html, /releases\/download\/v0\.4\.2-sonoma\/Mantis-0\.4\.2-macOS14\.dmg/);
     assert.match(html, /macOS 15\+/);
     assert.match(html, /macOS 14 Sonoma/);
     assert.match(html, /Apple Silicon/);

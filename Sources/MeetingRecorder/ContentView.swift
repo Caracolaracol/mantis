@@ -98,6 +98,10 @@ struct ContentView: View {
                     VStack(spacing: 8) {
                         ProgressView().controlSize(.small)
                         Text(AppLocalization.message(model.phase.isEmpty ? "Preparando…" : model.phase)).font(.caption)
+                        if model.startingRecording {
+                            Button("Cancelar preparación", action: model.cancelRecordingPreparation)
+                                .font(.caption)
+                        }
                     }.frame(maxWidth: 190)
                 } else {
                     Button("Grabar audio", systemImage: "record.circle.fill", action: model.startRecording)

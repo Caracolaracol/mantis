@@ -3,12 +3,26 @@ import ScreenCaptureKit
 import MeetingCore
 
 @MainActor
-final class RecordingService {
+protocol RecordingBackend: AnyObject {
+    var microphoneLevel: Double { get }
+    var microphoneIsRecording: Bool { get }
+    var captureFailure: String? { get }
+    func preparePermissions(for mode: RecordingMode) async throws
+    func applications() async throws -> [SCRunningApplication]
+    func start(mode: RecordingMode, applicationID: Int32?, destination: URL, route: AudioInputRoute?,
+               progress: @escaping @MainActor (String) -> Void,
+               onFailure: @escaping @MainActor (String) -> Void) async throws
+    func stop() async throws
+}
+
+@MainActor
+final class RecordingService: RecordingBackend {
     private var microphone: AVAudioRecorder?
     private var stream: SCStream?
     private var output: CaptureOutput?
     private var routedMicrophone: RoutedMicrophone?
     private var stopping = false
+    private var restartRequired = false
     private(set) var captureFailure: String?
 
     var microphoneLevel: Double {
@@ -20,27 +34,61 @@ final class RecordingService {
     var microphoneIsRecording: Bool { microphone?.isRecording ?? false }
 
     func preparePermissions(for mode: RecordingMode) async throws {
+        try Task.checkCancellation()
         try await CapturePermissions.ensure(for: mode)
+        try Task.checkCancellation()
+    }
+
+    private func shareableContent() async throws -> SCShareableContent {
+        try await CaptureRequest<SCShareableContent>.perform(timeoutError: CaptureRequestError.timedOut("obtener las fuentes de audio")) { finish in
+            SCShareableContent.getExcludingDesktopWindows(false, onScreenWindowsOnly: false) { content, error in
+                if let error { finish(.failure(error)) }
+                else if let content { finish(.success(content)) }
+                else { finish(.failure(MeetingError.message("macOS no devolvió fuentes de audio disponibles."))) }
+            }
+        }
+    }
+
+    private static func requestStopWithoutWaiting(_ stream: SCStream) {
+        // A cleanup request must not re-enter the async API that just timed out.
+        stream.stopCapture { _ in }
     }
 
     func applications() async throws -> [SCRunningApplication] {
         try await preparePermissions(for: .systemAudio)
         // Called only after an explicit user action; this can request screen/audio permission.
-        let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: false)
+        let content = try await shareableContent()
         return content.applications.filter {
             $0.processID != ProcessInfo.processInfo.processIdentifier && !$0.applicationName.isEmpty
         }.sorted { $0.applicationName.localizedCaseInsensitiveCompare($1.applicationName) == .orderedAscending }
     }
 
     func start(mode: RecordingMode, applicationID: Int32?, destination: URL, route: AudioInputRoute? = nil,
+               progress: @escaping @MainActor (String) -> Void = { _ in },
                onFailure: @escaping @MainActor (String) -> Void) async throws {
         guard microphone == nil, stream == nil, output == nil else {
             throw MeetingError.message("Ya hay una grabación activa.")
         }
+        if restartRequired { throw CaptureRequestError.stopTimedOut }
+        progress("Verificando permisos…")
         try await preparePermissions(for: mode)
         stopping = false
         captureFailure = nil
+        let reportFailure: @MainActor (String) -> Void = { [weak self] message in
+            guard let self, !self.stopping else { return }
+            self.captureFailure = message
+            onFailure(message)
+        }
+        if let route {
+            progress("Comprobando entrada y canales…")
+            guard let device = try AudioInputDevice.available().first(where: { $0.id == route.deviceUID }) else {
+                throw MeetingError.message("La entrada seleccionada se desconectó. Actualiza los dispositivos.")
+            }
+            try route.validate(channelCount: device.channelCount)
+        }
+        try Task.checkCancellation()
         if mode == .microphone, route == nil {
+            progress("Iniciando micrófono…")
             let recorder = try AVAudioRecorder(url: destination, settings: [
                 AVFormatIDKey: kAudioFormatMPEG4AAC,
                 AVSampleRateKey: 48_000,
@@ -64,21 +112,26 @@ final class RecordingService {
                 }
             }
             let microphone = RoutedMicrophone()
-            do { try microphone.start(route: route, output: output, onFailure: onFailure) }
+            progress("Iniciando micrófono…")
+            do { try microphone.start(route: route, output: output, onFailure: reportFailure) }
             catch { await output.cancel(); throw error }
             self.routedMicrophone = microphone
             self.output = output
             return
         }
 
-        let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: false)
+        progress("Buscando fuentes de audio…")
+        let content = try await shareableContent()
+        try Task.checkCancellation()
         guard let display = content.displays.first else {
             throw MeetingError.message("No hay una pantalla disponible para capturar audio del sistema.")
         }
         let filter: SCContentFilter
         if mode.capturesWholeSystemAudio {
             // No application filter: include all system audio (not just the foreground app).
-            filter = SCContentFilter(display: display, excludingWindows: [])
+            // Avoid the empty excludingWindows filter, which can start without callbacks
+            // on older ScreenCaptureKit versions. Exclude no applications instead.
+            filter = SCContentFilter(display: display, excludingApplications: [], exceptingWindows: [])
         } else {
             guard let applicationID, let application = content.applications.first(where: { $0.processID == applicationID }) else {
                 throw MeetingError.message("La aplicación seleccionada ya no está disponible. Actualiza la lista.")
@@ -101,20 +154,30 @@ final class RecordingService {
         self.output = output
         self.stream = stream
         do {
-            try await stream.startCapture()
+            progress("Iniciando audio del computador…")
+            let stopLateStart = { Self.requestStopWithoutWaiting(stream) }
+            try await CaptureRequest<Void>.perform(abort: stopLateStart, lateSuccess: { stopLateStart() }) { finish in
+                stream.startCapture { error in
+                    if let error { finish(.failure(error)) }
+                    else { finish(.success(())) }
+                }
+            }
+            try Task.checkCancellation()
             if plan.usesSeparateMicrophone {
+                progress("Iniciando micrófono…")
                 let microphone = RoutedMicrophone()
-                try microphone.start(route: route, output: output, onFailure: onFailure)
+                try microphone.start(route: route, output: output, onFailure: reportFailure)
                 self.routedMicrophone = microphone
             }
+            try Task.checkCancellation()
             if let failure = await output.failureMessage() {
-                try? await stream.stopCapture()
                 throw MeetingError.message(failure)
             }
         } catch {
             routedMicrophone?.stop()
             routedMicrophone = nil
-            try? await stream.stopCapture()
+            // Do not block failure/cancellation cleanup on a second framework callback.
+            Self.requestStopWithoutWaiting(stream)
             self.stream = nil
             self.output = nil
             await output.cancel()
@@ -136,10 +199,26 @@ final class RecordingService {
         self.stream = nil
         self.output = nil
         var stopError: Error?
-        do { try await stream?.stopCapture() }
-        catch { stopError = error }
+        do {
+            if let stream {
+                try await CaptureRequest<Void>.perform(timeout: 5, timeoutError: CaptureRequestError.stopTimedOut) { finish in
+                    stream.stopCapture { error in
+                        if let error { finish(.failure(error)) }
+                        else { finish(.success(())) }
+                    }
+                }
+            }
+        }
+        catch {
+            stopError = error
+            if case CaptureRequestError.stopTimedOut = error { restartRequired = true }
+        }
         // Finalize captured audio even when ScreenCaptureKit reports a stop error.
-        try await output.finish()
+        do { try await output.finish() }
+        catch {
+            if let stopError { throw stopError }
+            throw error
+        }
         if let stopError { throw stopError }
     }
 }

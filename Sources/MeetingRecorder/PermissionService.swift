@@ -23,7 +23,11 @@ enum PermissionService {
 
     static func request(_ kind: CapturePermissionKind) async -> Bool {
         switch kind {
-        case .microphone: return await AVCaptureDevice.requestAccess(for: .audio)
+        case .microphone:
+            // Permission dialogs have no deadline, but Cancel preparation can stop waiting.
+            return (try? await CaptureRequest<Bool>.perform(timeout: nil) { finish in
+                AVCaptureDevice.requestAccess(for: .audio) { finish(.success($0)) }
+            }) ?? false
         case .systemAudio: return CGPreflightScreenCaptureAccess() || CGRequestScreenCaptureAccess()
         }
     }

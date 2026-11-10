@@ -55,9 +55,12 @@ struct AudioInputRoute: Equatable {
     let channels: [Int]
 
     func validate(channelCount: Int) throws {
-        guard !channels.isEmpty, Set(channels).count == channels.count,
+        guard !channels.isEmpty else {
+            throw MeetingError.message("Marca al menos un canal de entrada. Puedes marcar varios.")
+        }
+        guard Set(channels).count == channels.count,
               channels.allSatisfy({ $0 >= 0 && $0 < channelCount }) else {
-            throw MeetingError.message("Selecciona al menos un canal disponible de la entrada de audio.")
+            throw MeetingError.message(AppLocalization.format("Los canales seleccionados (%@) no están disponibles en la entrada actual (%lld canales). Actualiza los dispositivos y revisa la selección.", channels.map { String($0 + 1) }.joined(separator: ", "), channelCount))
         }
     }
 
@@ -72,6 +75,25 @@ struct AudioInputRoute: Equatable {
                 sum + (buffer.format.isInterleaved ? data[0][frame * stride + channel] : data[channel][frame])
             } / Float(channels.count)
         }
+    }
+}
+
+/// Validate the native input format, not a cached output/graph channel count.
+struct AudioInputCaptureConfiguration {
+    let format: AVAudioFormat
+    let route: AudioInputRoute
+
+    init(hardwareFormat: AVAudioFormat, route: AudioInputRoute?) throws {
+        guard hardwareFormat.sampleRate.isFinite, hardwareFormat.sampleRate > 0 else {
+            throw MeetingError.message("La entrada de audio no tiene una frecuencia válida.")
+        }
+        let selected = route ?? AudioInputRoute(deviceUID: "system-default", channels: Array(0..<Int(hardwareFormat.channelCount)))
+        try selected.validate(channelCount: Int(hardwareFormat.channelCount))
+        guard hardwareFormat.commonFormat == .pcmFormatFloat32 else {
+            throw MeetingError.message("La entrada no entregó audio Float32 compatible.")
+        }
+        format = hardwareFormat
+        self.route = selected
     }
 }
 
@@ -95,13 +117,11 @@ final class RoutedMicrophone {
                                              0, &id, UInt32(MemoryLayout<AudioDeviceID>.size))
             guard status == noErr else { throw MeetingError.message("No se pudo seleccionar la interfaz de audio (\(status)).") }
         }
-        let format = input.outputFormat(forBus: 0)
-        guard format.sampleRate > 0 else { throw MeetingError.message("La entrada de audio no tiene una frecuencia válida.") }
-        // A nil route uses the engine's default input without altering the system device.
-        let channels = route ?? AudioInputRoute(deviceUID: "system-default", channels: Array(0..<Int(format.channelCount)))
-        try channels.validate(channelCount: Int(format.channelCount))
-        input.installTap(onBus: 0, bufferSize: 2048, format: format) { buffer, time in
-            output.appendMicrophone(buffer, at: time, route: channels)
+        // The input scope reflects the hardware channels. The output scope may still
+        // describe a previous graph/device format and reject an otherwise valid pair.
+        let capture = try AudioInputCaptureConfiguration(hardwareFormat: input.inputFormat(forBus: 0), route: route)
+        input.installTap(onBus: 0, bufferSize: 2048, format: capture.format) { buffer, time in
+            output.appendMicrophone(buffer, at: time, route: capture.route)
         }
         configurationObserver = NotificationCenter.default.addObserver(forName: .AVAudioEngineConfigurationChange,
                                                                        object: engine, queue: .main) { _ in
