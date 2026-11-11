@@ -10,7 +10,7 @@ Nombre provisional aprobado por el usuario: **Mantis**.
 - `mantis-head-1024.png`: rasterización de esa fuente, con transparencia fuera de las esquinas redondeadas.
 - `mantis-head-symbol.svg`: la misma geometría, monocroma y con ojos transparentes para el menú nativo.
 - `../MantisTemplate.png`: raster de 64 px del símbolo, usado como plantilla de 18 pt por AppKit.
-- `../Mantis.icns`: icono de macOS generado con `scripts/generate-icon.sh` a partir del raster de 1024 px.
+- `../Mantis.icns`: icono de macOS generado con `scripts/generate-icon.sh` a partir del raster de 1024 px. El diseño completo se reduce uniformemente a 824×824 px, centrado con 100 px de margen transparente por lado, para equilibrar su tamaño visible en el Dock. `scripts/generate-dock-icon.swift` aplica este margen antes de generar todos los tamaños; no modifica el logo del sitio ni la plantilla de la barra de menús.
 
 La paleta y el lienzo usan la identidad visual propia del proyecto; no se copia una máscara externa. Lienzo64×64, radio14, sin filtros ni degradados.
 

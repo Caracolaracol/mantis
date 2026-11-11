@@ -1,6 +1,6 @@
 # Mantis — estado y próximos pasos
 
-## Implementado en 0.4.0
+## Implementado en 0.5.0
 
 - [x] App nativa macOS 15+ con SwiftUI/AppKit y barra de menús.
 - [x] Cinco modos de captura de solo audio y selección de entrada/canales.
@@ -18,10 +18,13 @@
 - [x] Inglés y español en bienvenida, ajustes, biblioteca, modelos, mensajes y barra de menús; inglés por defecto y selección persistente.
 - [x] Tablas nativas EN/ES generadas desde un catálogo compartido, sin traducir datos del usuario.
 - [x] Avisos de nuevas Releases estables, búsqueda manual y revisión automática opcional (apagada por defecto, un intento por día), sin instalar ni interrumpir grabaciones.
+- [x] Grabación rápida sin abrir la biblioteca, incluso al iniciar por CLI/SketchyBar; los avisos de actualización no reemplazan la acción de grabar.
+- [x] Ventana independiente para editar el nombre del archivo ya guardado, desactivable en General; renombrado seguro de audio/TXT y transcripción posterior a la decisión.
+- [x] Icono del Dock con margen transparente exterior, sin rediseñar la marca.
 
 ## Validación automatizada
 
-- [x] 103 pruebas Swift con integraciones locales, localización, avisos de versiones y vistas sintéticas.
+- [x] 135 pruebas Swift por edición con integraciones locales, localización, avisos de versiones, nombres de archivos y vistas sintéticas.
 - [x] 12 pruebas Python de SketchyBar en modo dry-run, incluidos idioma, registro del widget y rutas con espacios/comillas.
 - [x] Las pruebas de recuperación de permisos usan un ejecutor falso: no ejecutan `tccutil` real.
 - [x] Las pruebas de inicio de sesión usan un servicio falso: no registran la app al login.
@@ -37,14 +40,14 @@
 - [ ] Validar descargas reales de cada modelo, cancelación y selección.
 - [ ] Validar copia de bibliotecas anteriores con datos de prueba y copia de seguridad.
 
-## Edición Sonoma separada (0.4.2 de prueba)
+## Edición Sonoma separada (0.5.0 de prueba)
 
-- [x] Build opt-in `MANTIS_MACOS14=1`, directorio `.build-sonoma/` y DMG `Mantis-0.4.2-macOS14.dmg`; estándar macOS 15 intacto.
+- [x] Build opt-in `MANTIS_MACOS14=1`, directorio `.build-sonoma/` y DMG `Mantis-0.5.0-macOS14.dmg`; estándar macOS 15 en canal separado.
 - [x] Captura de micrófono con AVAudioEngine y salida interna independiente del enum de micrófono de macOS 15; audio de sistema/aplicación con ScreenCaptureKit.
 - [x] Comprobación sintética de desfase de 0,5 s entre tonos de las dos fuentes, medida sobre audio decodificado, y exportación M4A de 2,5 s.
 - [x] Canal de avisos que solo acepta Releases `-sonoma`, sin ofrecer descargas estándar incompatibles.
 - [x] Preparación cancelable, deadlines para callbacks de ScreenCaptureKit, limpieza de inicios tardíos y selección multicanal con formato nativo y errores precisos.
-- [x] 119 pruebas Swift por variante (Sonoma y estándar), más 12 del widget y 13 del sitio.
+- [x] 135 pruebas Swift por variante (Sonoma y estándar), más 12 del widget y 13 del sitio.
 - [ ] Probar lanzamiento, permisos, fuentes reales, sincronización y sesiones largas en un Mac con macOS 14 real antes de considerar estable esta edición.
 
 ## Sitio de la aplicación

@@ -39,7 +39,7 @@ final class StatusBarController: NSObject {
             symbol = "waveform"
             button.title = " " + AppLocalization.text(state == .transcribing ? "Transcribiendo" : "Preparando")
             button.contentTintColor = .systemOrange
-            button.toolTip = AppLocalization.text("Procesamiento local en curso. Clic para abrir Mantis.")
+            button.toolTip = AppLocalization.text("Procesamiento local en curso. Clic derecho: opciones.")
         case .error:
             symbol = "exclamationmark.circle"
             button.title = " Mantis"
@@ -52,7 +52,7 @@ final class StatusBarController: NSObject {
             button.toolTip = AppLocalization.text("Grabar todo: audio del computador + entrada seleccionada (micrófono o interfaz). Avisa a los participantes. Clic derecho: opciones.")
             if case .available = model.updates.state {
                 button.title = " ↑"
-                button.toolTip = AppLocalization.text("Nueva versión disponible. Clic para abrir Mantis; clic derecho para ver opciones de grabación.")
+                button.toolTip = AppLocalization.text("Nueva versión disponible. Clic para grabar; clic derecho para ver opciones.")
             }
         }
         if state == .idle,
@@ -70,8 +70,7 @@ final class StatusBarController: NSObject {
 
     @objc private func clicked() {
         if NSApp.currentEvent?.type == .rightMouseUp { showMenu(); return }
-        if !model.busy, case .available = model.updates.state { showWindow(); return }
-        if (model.busy && model.activeMeetingID == nil) || model.alert != nil || model.showingOnboarding { showWindow() }
+        if model.alert != nil || model.showingOnboarding { showWindow() }
         else { model.toggleQuickRecording() }
     }
 

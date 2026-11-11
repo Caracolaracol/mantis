@@ -122,6 +122,7 @@ private struct MainWindowView: View {
 final class AppDelegate: NSObject, NSApplicationDelegate {
     var reopenWindow: (() -> Void)?
     private var statusBar: StatusBarController?
+    private var recordingNameWindow: RecordingNameWindowController?
     private var timer: Timer?
     private var control: RecorderControl?
     private var lastPublish = Date.distantPast
@@ -141,6 +142,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         let model = AppModel.shared
+        recordingNameWindow = RecordingNameWindowController(model: model)
         statusBar = StatusBarController(model: model) { [weak self] in self?.showWindow() }
         do { control = try RecorderControl() }
         catch { model.alert = error.localizedDescription }

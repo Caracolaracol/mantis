@@ -19,6 +19,10 @@ final class AppModel: ObservableObject {
     @Published var automaticTranscription = RecordingPreferences.automaticTranscription() {
         didSet { if !isPreview { RecordingPreferences.setAutomaticTranscription(automaticTranscription) } }
     }
+    @Published var askForRecordingName = RecordingPreferences.askForRecordingName() {
+        didSet { if !isPreview { RecordingPreferences.setAskForRecordingName(askForRecordingName) } }
+    }
+    @Published private(set) var pendingRecordingName: RecordingNameRequest?
     @Published var selectedApplicationID: Int32?
     @Published private(set) var applications: [SCRunningApplication] = []
     @Published private(set) var audioInputs: [AudioInputDevice] = []
@@ -66,7 +70,7 @@ final class AppModel: ObservableObject {
     private var recordingStartTask: Task<Void, Never>?
     private var isPreview = false
 
-    var busy: Bool { preparing || configuringPermissions || systemAudioPermissionResetState == .running || activeMeetingID != nil || processingID != nil || modelDownloadID != nil }
+    var busy: Bool { preparing || configuringPermissions || systemAudioPermissionResetState == .running || activeMeetingID != nil || processingID != nil || modelDownloadID != nil || pendingRecordingName != nil }
     var selectedMeeting: Meeting? { meetings.first { $0.id == selection } }
     var inputRoute: AudioInputRoute? {
         selectedAudioInputUID.isEmpty ? nil : AudioInputRoute(deviceUID: selectedAudioInputUID, channels: selectedInputChannels.sorted())
@@ -361,7 +365,9 @@ final class AppModel: ObservableObject {
             preparing = false
             stopping = false
             if let failure { alert = failure }
-            else if automaticTranscription { transcribe(id) }
+            else if askForRecordingName {
+                pendingRecordingName = RecordingNameRequest(meeting: meeting, transcribeAfterNaming: automaticTranscription)
+            } else if automaticTranscription { transcribe(id) }
         }
     }
 
@@ -391,6 +397,27 @@ final class AppModel: ObservableObject {
                 alert = error.localizedDescription
             }
         }
+    }
+
+    func saveRecordingName(_ id: UUID, fileStem: String) throws {
+        guard let request = pendingRecordingName, request.id == id,
+              let store, let meeting = meetings.first(where: { $0.id == id }) else {
+            throw MeetingError.message("La grabación ya no está disponible para cambiar su nombre.")
+        }
+        let renamed = try store.renamingRecording(meeting, toFileStem: fileStem)
+        if let index = meetings.firstIndex(where: { $0.id == id }) { meetings[index] = renamed }
+        finishRecordingName(request)
+    }
+
+    /// Closing the panel or pressing Escape keeps the already saved automatic name.
+    func keepRecordingName(_ id: UUID) {
+        guard let request = pendingRecordingName, request.id == id else { return }
+        finishRecordingName(request)
+    }
+
+    private func finishRecordingName(_ request: RecordingNameRequest) {
+        pendingRecordingName = nil
+        if request.transcribeAfterNaming { transcribe(request.id) }
     }
 
     func transcribe(_ id: UUID) {

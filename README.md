@@ -9,13 +9,13 @@
 <p align="center">
   <img src="https://img.shields.io/badge/macOS-15%2B-black" alt="macOS 15 o posterior">
   <img src="https://img.shields.io/badge/plataforma-Apple%20Silicon-green" alt="Apple Silicon">
-  <img src="https://img.shields.io/badge/versión-0.4.0-pink" alt="Versión 0.4.0">
+  <img src="https://img.shields.io/badge/versión-0.5.0-pink" alt="Versión 0.5.0">
   <a href="LICENSE"><img src="https://img.shields.io/badge/licencia-MIT-blue" alt="Licencia MIT"></a>
 </p>
 
 Mantis graba el sonido del computador, un micrófono o una aplicación específica. Guarda archivos **M4A**, organiza una biblioteca local y permite transcribir con modelos que se ejecutan en tu Mac. No requiere cuenta, backend, Handy ni FFmpeg.
 
-**[Sitio de Mantis](https://caracolaracol.github.io/mantis/)** · **[Sitio en español](https://caracolaracol.github.io/mantis/es/)** · **[Descargar DMG para Apple Silicon](https://github.com/Caracolaracol/mantis/releases/download/v0.4.0/Mantis-0.4.0.dmg)** · **[Releases y checksum](https://github.com/Caracolaracol/mantis/releases/latest)**
+**[Sitio de Mantis](https://caracolaracol.github.io/mantis/)** · **[Sitio en español](https://caracolaracol.github.io/mantis/es/)** · **[Descargar DMG para Apple Silicon](https://github.com/Caracolaracol/mantis/releases/download/v0.5.0/Mantis-0.5.0.dmg)** · **[Releases y checksum](https://github.com/Caracolaracol/mantis/releases/latest)**
 
 <p align="center">
   <img src="docs/images/library.png" width="650" alt="Biblioteca de Mantis con búsqueda, grabaciones y transcripción">
@@ -45,18 +45,18 @@ La app y el sitio están disponibles en **inglés y español**, con **inglés po
 
 - **Mantis → Check for updates… / Buscar actualizaciones…**, el menú de la barra y **Settings → General / Ajustes → General** permiten consultar la última Release estable de GitHub.
 - La revisión automática está **desactivada por defecto**. Puedes activarla en General: comprueba al abrir y durante el reposo, como máximo una vez cada 24 horas. Los intentos fallidos también cuentan para ese límite; la búsqueda manual lo omite.
-- Si existe una versión mayor, aparece un aviso bilingüe con **Ver novedades**, **Descargar actualización…**, **Más tarde** y **Omitir esta versión**. Las dos primeras acciones abren la página oficial de la Release en el navegador; la descarga del DMG y la instalación son manuales. Una flecha en la barra indica el aviso pendiente cuando la app está en reposo; al pulsarla abre Mantis, no empieza a grabar. El clic derecho mantiene la acción explícita para grabar.
+- Si existe una versión mayor, aparece un aviso bilingüe con **Ver novedades**, **Descargar actualización…**, **Más tarde** y **Omitir esta versión**. Las dos primeras acciones abren la página oficial de la Release en el navegador; la descarga del DMG y la instalación son manuales. Una flecha en la barra indica el aviso pendiente cuando la app está en reposo, pero el clic izquierdo sigue grabando. Abre Mantis o usa clic derecho para revisar actualizaciones.
 - Durante grabación, preparación, permisos, descarga de modelos o transcripción, las búsquedas están bloqueadas y el aviso se oculta. No se cierran ventanas, interrumpen operaciones, reemplazan apps ni restablecen permisos.
 - Solo se consulta `https://api.github.com/repos/Caracolaracol/mantis/releases/latest`, sin cuenta, token, cookies, audios ni textos. GitHub recibe la solicitud y la dirección IP. Se usan HTTPS, límites de tamaño/tiempo y enlaces oficiales construidos localmente; no se siguen destinos arbitrarios entregados por el servidor.
-- **Quienes usen 0.3.0 deben instalar 0.4.0 manualmente una vez** para recibir estos avisos futuros. No es un actualizador automático ni usa Sparkle.
+- **Quienes usen 0.3.0 deben instalar una versión nueva manualmente una vez** para recibir estos avisos futuros. No es un actualizador automático ni usa Sparkle.
 
 ### Edición separada para macOS 14 Sonoma
 
-La edición **Sonoma 0.4.2** es una versión de prueba independiente para **macOS 14+ y Apple Silicon**. No reemplaza la Release estándar 0.4.0 (macOS 15+) ni se marca como última versión estable.
+La edición **Sonoma 0.5.0** es una versión de prueba independiente para **macOS 14+ y Apple Silicon**. No reemplaza la Release estándar 0.5.0 (macOS 15+) ni se marca como última versión estable.
 
-**[Descargar versión de prueba Sonoma](https://github.com/Caracolaracol/mantis/releases/tag/v0.4.2-sonoma)**.
+**[Descargar versión de prueba Sonoma](https://github.com/Caracolaracol/mantis/releases/tag/v0.5.0-sonoma)**.
 
-Usa AVAudioEngine para el micrófono y ScreenCaptureKit para el audio del sistema o de una aplicación. El archivo `Mantis-0.4.2-macOS14.dmg` contiene la app con el mismo identificador y conserva la biblioteca y preferencias existentes. **Elige una edición: no ejecutes ambas a la vez**, y sal completamente antes de reemplazar la app.
+Usa AVAudioEngine para el micrófono y ScreenCaptureKit para el audio del sistema o de una aplicación. El archivo `Mantis-0.5.0-macOS14.dmg` contiene la app con el mismo identificador y conserva la biblioteca y preferencias existentes. **Elige una edición: no ejecutes ambas a la vez**, y sal completamente antes de reemplazar la app.
 
 Los avisos de la edición Sonoma consultan únicamente el canal de Releases con sufijo `-sonoma`; no te ofrecerán una actualización estándar que vuelva a exigir macOS 15. La revisión automática sigue apagada por defecto. Su consulta usa `https://api.github.com/repos/Caracolaracol/mantis/releases?per_page=20`, sin audios, textos, cookies o credenciales.
 
@@ -64,12 +64,12 @@ Compilar y empaquetar sin tocar la edición estándar:
 
 ```bash
 bash scripts/build-sonoma.sh
-./scripts/verify-dmg.sh build/Mantis-0.4.2-macOS14.dmg
+./scripts/verify-dmg.sh build/Mantis-0.5.0-macOS14.dmg
 ```
 
 El build utiliza `.build-sonoma/` y `build/Mantis-Sonoma.app`. La firma sigue siendo ad hoc, sin notarización. **La compilación con objetivo 14 y las pruebas de la ruta alternativa no sustituyen una prueba en un Mac con Sonoma real**: permisos, fuentes de audio, sincronización y sesiones largas siguen pendientes de validar allí.
 
-Sonoma 0.4.2 conserva selecciones multicanal, usa el formato nativo de entrada e identifica errores de canales no disponibles en vez de pedir elegir solo uno. Mientras prepara una grabación, muestra la etapa y permite **Cancelar preparación**. Las esperas de fuentes e inicio de ScreenCaptureKit vencen a los 15 segundos; el permiso de micrófono espera la decisión del usuario, pero se puede cancelar la preparación. Cancelar nunca adopta un callback tardío como una nueva grabación. Si una detención no se confirma, sal completamente de la app antes de reintentar.
+Desde Sonoma 0.4.2 se conservan selecciones multicanal, se usa el formato nativo de entrada y se identifican errores de canales no disponibles en vez de pedir elegir solo uno. Mientras prepara una grabación, muestra la etapa y permite **Cancelar preparación**. Las esperas de fuentes e inicio de ScreenCaptureKit vencen a los 15 segundos; el permiso de micrófono espera la decisión del usuario, pero se puede cancelar la preparación. Cancelar nunca adopta un callback tardío como una nueva grabación. Si una detención no se confirma, sal completamente de la app antes de reintentar.
 
 ## Requisitos
 
@@ -108,10 +108,10 @@ open build/Mantis.app
 
 ```bash
 ./scripts/build-dmg.sh
-./scripts/verify-dmg.sh build/Mantis-0.4.0.dmg
+./scripts/verify-dmg.sh build/Mantis-0.5.0.dmg
 ```
 
-Se generan `build/Mantis-0.4.0.dmg` y su archivo `.sha256`. El DMG contiene Mantis y un acceso **Applications** hacia la carpeta Aplicaciones:
+Se generan `build/Mantis-0.5.0.dmg` y su archivo `.sha256`. El DMG contiene Mantis y un acceso **Applications** hacia la carpeta Aplicaciones:
 
 1. Sal de cualquier versión de Mantis abierta; cerrar su ventana no termina la app.
 2. Abre el DMG y arrastra **Mantis.app** a **Aplicaciones**.
@@ -160,9 +160,13 @@ Abre **Ajustes** desde la cabecera o con `⌘,`:
 
 El inicio sin ventana se aplica en el próximo lanzamiento, después de completar la bienvenida. Para abrir la biblioteca, usa clic derecho en el icono de Mantis → **Abrir Mantis**. El inicio de sesión usa `SMAppService.mainApp`: actívalo desde la copia instalada en Aplicaciones y aprueba la solicitud de macOS si corresponde. Ninguna opción inicia grabaciones automáticamente.
 
+Los controles de grabación rápida de la barra de menús y SketchyBar no abren la biblioteca, incluso si Mantis estaba cerrada y no activaste el inicio sin ventana. La bienvenida y los errores que requieren revisión siguen siendo accesibles. Los avisos de actualización no reemplazan la acción de grabar.
+
+Al finalizar correctamente una grabación, el audio se guarda primero con su nombre automático y aparece una ventana pequeña de Mantis con ese nombre editable. **Guardar nombre** renombra el archivo real y su TXT si existe, sin sobrescribir otros archivos; **Mantener nombre**, Escape o cerrar la ventana conserva el nombre ya guardado. Puedes desactivar **Ajustes → General → Al terminar de grabar → Preguntar por el nombre del archivo** para guardar directamente, sin ventana. La transcripción automática, si está activada, empieza después de esta decisión y usa el nombre definitivo. No se pregunta el nombre al importar audio ni si la grabación termina con error.
+
 ### Barra de menús y arrastre
 
-- **Clic izquierdo:** graba computador + entrada; otro clic detiene. Durante procesamiento abre la ventana.
+- **Clic izquierdo:** graba computador + entrada sin abrir la biblioteca; otro clic detiene. Durante procesamiento no inicia otra operación ni abre la ventana.
 - **Clic derecho:** grabar/detener, abrir Mantis, cancelar transcripción o salir.
 - **Arrastrar una fila:** entrega el archivo de audio real mediante una sesión nativa de macOS, como Finder. No se pueden arrastrar capturas en curso ni archivos ausentes.
 
@@ -331,10 +335,11 @@ Se crea el ítem **`mantis`** a la derecha, con actualización cada segundo. No 
 
 | Acción o estado | Comportamiento |
 | --- | --- |
-| Clic izquierdo en reposo | Inicia audio del computador + entrada elegida. Si la app estaba cerrada, la inicia. |
+| Clic izquierdo en reposo | Inicia audio del computador + entrada elegida. Si la app estaba cerrada, la inicia sin abrir la biblioteca (salvo configuración inicial pendiente). |
 | Clic izquierdo grabando | Detiene y guarda; transcribe solo si activaste esa opción. |
 | Clic derecho | Abre Mantis. |
-| Clic durante preparación, transcripción o error | Abre Mantis sin iniciar otra grabación. |
+| Clic durante preparación o transcripción | No envía órdenes ni abre la biblioteca. |
+| Clic con error pendiente | Abre Mantis para revisar, sin iniciar otra grabación. |
 | `Record` / `Grabar` | En reposo o app cerrada; sigue el idioma que publica Mantis. |
 | `REC mm:ss` rojo | Grabación en curso. |
 | `Preparing` / `Preparando`, `Transcribing` / `Transcribiendo` | Operación en curso. |

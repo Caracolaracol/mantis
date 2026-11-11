@@ -34,8 +34,13 @@ fi
 
 if [[ "${1:-}" == click || "${SENDER:-}" == mouse.clicked ]]; then
   COMMAND=--toggle-recording
-  if [[ "${BUTTON:-left}" == right || "$STATE" == preparing || "$STATE" == transcribing || "$STATE" == error ]]; then
+  if [[ "${BUTTON:-left}" == right || "$STATE" == error ]]; then
     COMMAND=--show
+  fi
+  # A busy left click must neither raise the library nor queue a later recording.
+  if [[ "${BUTTON:-left}" != right && ( "$STATE" == preparing || "$STATE" == transcribing ) ]]; then
+    if [[ "${MEETING_RECORDER_DRY_RUN:-0}" == 1 ]]; then printf 'Busy; no command sent\n'; fi
+    exit 0
   fi
   if [[ "${MEETING_RECORDER_DRY_RUN:-0}" == 1 ]]; then
     printf 'Would send %s to %s\n' "$COMMAND" "$EXECUTABLE"

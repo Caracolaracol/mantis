@@ -24,6 +24,10 @@ enum UIPreviewRenderer {
         let updates = AppUpdateController.preview(release: AppRelease(tag: "v0.4.0")!)
         try capture(AppUpdateNotice(updates: updates, isBusy: false).padding(24).mantisAppearance().environment(\.locale, language.locale),
                     size: NSSize(width: 700, height: 260), to: directory.appendingPathComponent("update-\(language.rawValue).png"))
+        let recording = Meeting(mode: .microphone, audioFileName: "\(Meeting.automaticFileStem(for: Date(timeIntervalSince1970: 1_799_000_000))).m4a")
+        try capture(RecordingNameView(request: RecordingNameRequest(meeting: recording, transcribeAfterNaming: false), save: { _ in }, keep: {})
+            .environment(\.locale, language.locale), size: NSSize(width: 460, height: 270),
+                    to: directory.appendingPathComponent("recording-name-\(language.rawValue).png"))
     }
 
     private static func capture<V: View>(_ view: V, size: NSSize, to url: URL) throws {

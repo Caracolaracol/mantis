@@ -1,5 +1,13 @@
 # Cambios
 
+## 0.5.0 — 2026-11-10
+
+- Grabar desde SketchyBar o la barra de menús no abre la biblioteca, incluso al iniciar la app desde un control rápido. La bienvenida y los errores que requieren revisión mantienen su acceso; un aviso de actualización ya no reemplaza el clic para grabar.
+- Tras guardar correctamente una grabación, una ventana pequeña de Mantis permite editar el nombre propuesto del archivo. Cerrar, Escape o **Mantener nombre** conserva el nombre automático. **Ajustes → General → Preguntar por el nombre del archivo** permite desactivar esta ventana.
+- El cambio de nombre mueve el audio y su TXT si existe, valida nombres y conflictos y revierte los movimientos si falla el guardado del registro. La transcripción automática espera la decisión del nombre para usar la ruta definitiva.
+- Icono del Dock con margen transparente exterior, sin modificar el diseño de la mantis ni el logo del sitio.
+- 135 pruebas Swift por edición y 12 pruebas del widget; vistas nuevas verificadas en inglés y español con datos sintéticos.
+
 ## 0.4.2 Sonoma — correcciones de preparación y canales (prueba)
 
 - Selección de varios canales conservada al reaplicar la misma entrada; el último canal no puede desmarcarse accidentalmente. Formato de captura tomado de la entrada nativa del dispositivo y errores distintos para selección vacía o canales no disponibles.

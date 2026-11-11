@@ -34,8 +34,12 @@ class SketchyBarTests(unittest.TestCase):
         self.assertIn("--toggle-recording", self.run_script("recording", click=True))
 
     def test_processing_does_not_start_another_recording(self):
-        for state in ["preparing", "transcribing", "error"]:
-            self.assertIn("--show", self.run_script(state, click=True))
+        for state in ["preparing", "transcribing"]:
+            output = self.run_script(state, click=True)
+            self.assertIn("no command sent", output)
+            self.assertNotIn("--show", output)
+            self.assertIn("--show", self.run_script(state, click=True, button="right"))
+        self.assertIn("--show", self.run_script("error", click=True))
 
     def test_idle_click(self):
         self.assertIn("--toggle-recording", self.run_script("idle", click=True))

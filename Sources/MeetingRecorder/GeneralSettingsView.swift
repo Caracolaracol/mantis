@@ -50,6 +50,12 @@ struct GeneralSettingsView: View {
                     .font(.callout).foregroundStyle(MantisTheme.secondary)
             }.mantisCard()
             VStack(alignment: .leading, spacing: 12) {
+                Label("Al terminar de grabar", systemImage: "square.and.pencil").font(.headline).foregroundStyle(MantisTheme.pink)
+                Toggle("Preguntar por el nombre del archivo", isOn: $model.askForRecordingName)
+                Text("Muestra una ventana pequeña con el nombre propuesto. Si desactivas esta opción, el audio se guarda directamente con su nombre automático.")
+                    .font(.callout).foregroundStyle(MantisTheme.secondary)
+            }.mantisCard()
+            VStack(alignment: .leading, spacing: 12) {
                 Label("Al abrir Mantis", systemImage: "menubar.rectangle").font(.headline).foregroundStyle(MantisTheme.pink)
                 Toggle("Iniciar en la barra de menús, sin abrir la ventana", isOn: $startInMenuBar)
                 Text("Se aplica la próxima vez que abras Mantis. Puedes abrir la biblioteca desde su icono en la barra de menús. La bienvenida inicial se muestra hasta completar la configuración.")

@@ -55,14 +55,14 @@ test('MIT license page contains complete repository license and upstream credit'
 test('download links and privacy/signing limitations are explicit', async () => {
   const home = await readFile(path.join(root, 'index.html'), 'utf8');
   const docs = await readFile(path.join(root, 'documentacion/index.html'), 'utf8');
-  assert.match(home, /releases\/download\/v0\.4\.0\/Mantis-0\.4\.0\.dmg/);
+  assert.match(home, /releases\/download\/v0\.5\.0\/Mantis-0\.5\.0\.dmg/);
   const englishDocs = await readFile(path.join(root, 'documentation/index.html'), 'utf8');
   assert.match(englishDocs, /not notarized/);
   assert.match(englishDocs, /id="actualizaciones"/);
   assert.match(englishDocs, /off by default/);
   assert.match(docs, /id="actualizaciones"/);
   assert.match(docs, /tu dirección IP/);
-  assert.match(docs, /v0\.4\.2-sonoma/);
+  assert.match(docs, /v0\.5\.0-sonoma/);
   assert.match(englishDocs, /test release/);
   for (const text of ['ScreenCapture', 'local.agus.MeetingRecorder', 'FileVault', 'Gatekeeper', 'SketchyBar']) assert.ok(docs.includes(text));
 });
@@ -85,9 +85,9 @@ test('home defaults to English and updated copy is present in both languages', a
 test('home offers separate standard and Sonoma downloads with clear requirements', async () => {
   for (const file of ['index.html', 'es/index.html']) {
     const html = await readFile(path.join(root, file), 'utf8');
-    assert.match(html, /releases\/download\/v0\.4\.0\/Mantis-0\.4\.0\.dmg/);
+    assert.match(html, /releases\/download\/v0\.5\.0\/Mantis-0\.5\.0\.dmg/);
     assert.match(html, /class="sonoma-download"/);
-    assert.match(html, /releases\/download\/v0\.4\.2-sonoma\/Mantis-0\.4\.2-macOS14\.dmg/);
+    assert.match(html, /releases\/download\/v0\.5\.0-sonoma\/Mantis-0\.5\.0-macOS14\.dmg/);
     assert.match(html, /macOS 15\+/);
     assert.match(html, /macOS 14 Sonoma/);
     assert.match(html, /Apple Silicon/);

@@ -108,6 +108,62 @@ public struct MeetingStore: Sendable {
         try encoder.encode(meeting).write(to: manifest, options: .atomic)
     }
 
+    /// Rename the actual audio and matching TXT as one recoverable operation.
+    /// Existing files and names reserved by another recording are never replaced.
+    public func renamingRecording(_ meeting: Meeting, toFileStem name: String) throws -> Meeting {
+        guard meeting.status != .recording, meeting.status != .transcribing else {
+            throw MeetingError.message("Espera a que termine la operación antes de renombrar la reunión.")
+        }
+        let ext = URL(fileURLWithPath: meeting.audioFileName).pathExtension
+        var stem = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        if (stem as NSString).pathExtension.lowercased() == ext.lowercased() {
+            stem = (stem as NSString).deletingPathExtension.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        guard !ext.isEmpty, !stem.isEmpty, stem != ".", stem != "..", !stem.hasPrefix("."),
+              !stem.contains("/"), !stem.contains("\\"), !stem.contains(":"),
+              stem.rangeOfCharacter(from: .controlCharacters) == nil,
+              "\(stem).\(ext)".utf8.count <= 255 else {
+            throw MeetingError.message("Usa un nombre de archivo válido, sin barras, dos puntos ni caracteres de control (máximo 255 bytes con extensión).")
+        }
+        var renamed = meeting
+        renamed.audioFileName = "\(stem).\(ext)"
+        try renamed.rename(to: stem)
+        let sourceAudio = try finalAudioURL(for: meeting)
+        guard FileManager.default.fileExists(atPath: sourceAudio.path) else {
+            throw MeetingError.message("Esta grabación no tiene audio guardado.")
+        }
+        if meeting.storageLayout == .flat {
+            guard try !load().contains(where: { other in
+                other.id != meeting.id && other.storageLayout == .flat
+                    && URL(fileURLWithPath: other.audioFileName).deletingPathExtension().lastPathComponent
+                        .caseInsensitiveCompare(stem) == .orderedSame
+            }) else {
+                throw MeetingError.message("Ya existe una grabación o archivo con ese nombre. Elige otro; no se sobrescribió nada.")
+            }
+        }
+        let pairs = [(sourceAudio, try finalAudioURL(for: renamed)),
+                     (try transcriptURL(for: meeting), try transcriptURL(for: renamed))]
+            .filter { $0.0 != $0.1 }
+        // Check both targets, even when a TXT has not been created yet.
+        for (_, target) in pairs where FileManager.default.fileExists(atPath: target.path) {
+            throw MeetingError.message("Ya existe una grabación o archivo con ese nombre. Elige otro; no se sobrescribió nada.")
+        }
+        var moved: [(URL, URL)] = []
+        do {
+            for (source, target) in pairs where FileManager.default.fileExists(atPath: source.path) {
+                try FileManager.default.moveItem(at: source, to: target)
+                moved.append((source, target))
+            }
+            try save(renamed)
+            return renamed
+        } catch {
+            for (source, target) in moved.reversed() {
+                try FileManager.default.moveItem(at: target, to: source)
+            }
+            throw error
+        }
+    }
+
     public func load() throws -> [Meeting] {
         var directories = try FileManager.default.contentsOfDirectory(at: root, includingPropertiesForKeys: nil)
             .filter { UUID(uuidString: $0.lastPathComponent) != nil }

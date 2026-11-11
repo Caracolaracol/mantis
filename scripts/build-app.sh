@@ -34,8 +34,7 @@ cp "$BIN_DIR/MeetingRecorder" "$APP/Contents/MacOS/MeetingRecorder"
 cp "$ROOT/Resources/Info.plist" "$APP/Contents/Info.plist"
 if [[ "$EDITION" = 1 ]]; then
   /usr/libexec/PlistBuddy -c 'Set :LSMinimumSystemVersion 14.0' "$APP/Contents/Info.plist"
-  /usr/libexec/PlistBuddy -c 'Set :CFBundleShortVersionString 0.4.2' "$APP/Contents/Info.plist"
-  /usr/libexec/PlistBuddy -c 'Set :CFBundleVersion 9' "$APP/Contents/Info.plist"
+  # Both editions share the source version/build; only target and channel differ.
   /usr/libexec/PlistBuddy -c 'Add :MantisDistributionChannel string sonoma' "$APP/Contents/Info.plist"
 fi
 cp "$ROOT/Resources/Mantis.icns" "$APP/Contents/Resources/Mantis.icns"

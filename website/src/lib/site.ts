@@ -1,13 +1,13 @@
 export const site = {
   name: 'Mantis',
-  version: '0.4.0',
+  version: '0.5.0',
   repo: 'https://github.com/Caracolaracol/mantis',
   release: 'https://github.com/Caracolaracol/mantis/releases/latest',
-  download: 'https://github.com/Caracolaracol/mantis/releases/download/v0.4.0/Mantis-0.4.0.dmg',
-  checksum: 'https://github.com/Caracolaracol/mantis/releases/download/v0.4.0/Mantis-0.4.0.dmg.sha256',
-  sonomaRelease: 'https://github.com/Caracolaracol/mantis/releases/tag/v0.4.2-sonoma',
-  sonomaVersion: '0.4.2',
-  sonomaDownload: 'https://github.com/Caracolaracol/mantis/releases/download/v0.4.2-sonoma/Mantis-0.4.2-macOS14.dmg',
+  download: 'https://github.com/Caracolaracol/mantis/releases/download/v0.5.0/Mantis-0.5.0.dmg',
+  checksum: 'https://github.com/Caracolaracol/mantis/releases/download/v0.5.0/Mantis-0.5.0.dmg.sha256',
+  sonomaRelease: 'https://github.com/Caracolaracol/mantis/releases/tag/v0.5.0-sonoma',
+  sonomaVersion: '0.5.0',
+  sonomaDownload: 'https://github.com/Caracolaracol/mantis/releases/download/v0.5.0-sonoma/Mantis-0.5.0-macOS14.dmg',
   portfolio: 'https://agustinrojasm.vercel.app',
 };
 

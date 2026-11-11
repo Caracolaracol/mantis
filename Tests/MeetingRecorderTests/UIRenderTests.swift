@@ -6,6 +6,22 @@ import MeetingCore
 
 final class UIRenderTests: XCTestCase {
     @MainActor
+    func testRenderRecordingNamePanelInBothLanguages() throws {
+        guard let path = ProcessInfo.processInfo.environment["MANTIS_UI_PREVIEW_DIR"] else {
+            throw XCTSkip("Set MANTIS_UI_PREVIEW_DIR for offscreen UI previews.")
+        }
+        let directory = URL(fileURLWithPath: path, isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let meeting = Meeting(mode: .microphone, audioFileName: "Recording 2026-11-10 18-30.m4a")
+        for language in AppLanguage.allCases {
+            let view = RecordingNameView(request: RecordingNameRequest(meeting: meeting, transcribeAfterNaming: false), save: { _ in }, keep: {})
+                .environment(\.locale, language.locale)
+            try render(view, size: CGSize(width: 460, height: 270),
+                       to: directory.appendingPathComponent("recording-name-\(language.rawValue).png"))
+        }
+    }
+
+    @MainActor
     func testRenderSyntheticUpdateNotice() async throws {
         guard let path = ProcessInfo.processInfo.environment["MANTIS_UI_PREVIEW_DIR"] else {
             throw XCTSkip("Set MANTIS_UI_PREVIEW_DIR for offscreen UI previews.")
